@@ -1,14 +1,16 @@
 import {createContext} from "react";
-import { UseFetchPostsProps } from "../hooks/useFechtDataHook";
+import { ContextInterface } from "../types/types";
 
-const defaultContextValue: UseFetchPostsProps = {
+const defaultContextValue = {
     companies: [],
     patients: [],
     exams: [],
     occupationalHazards: [],
     forms: [],
     loading: true,
-    error: false 
+    error: false,
+    setPatients: () => {}
   };
 
-export const DataContext = createContext<UseFetchPostsProps>(defaultContextValue)
+
+export const DataContext = createContext<ContextInterface>(defaultContextValue)

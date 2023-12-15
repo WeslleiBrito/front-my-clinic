@@ -23,10 +23,16 @@ export interface Form {
     rg: string,
     cnpj: string | undefined,
     cpf: string | undefined,
+    functionPatient: string,
+    status: boolean,
     numberProcedures: number,
     amount: number,
     createdAt: string,
     updatedAt: string,
+    typeExamAso: {
+        id: string,
+        name: string
+    },
     exams: {
         id: string,
         name: string,
@@ -35,7 +41,7 @@ export interface Form {
     OccupationalHazards: {
         id: string,
         name: string
-    }[]
+    }[]   
 }
 
 export interface Exam {
@@ -61,3 +67,21 @@ export interface Patient {
     createdAt: string,
     updatedAt: string
 }
+
+export interface TypeExamAso {
+    id: string,
+    name: string,
+    createdAt: string,
+    updatedAt: string
+}
+
+export interface ContextInterface {
+    companies: Company[],
+    patients: Patient[],
+    exams: Exam[],
+    occupationalHazards: OccupationalRisc[],
+    forms: Form[],
+    loading: boolean,
+    error: boolean,
+    setPatients: Function
+  };

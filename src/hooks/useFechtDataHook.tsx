@@ -5,7 +5,7 @@ import { BASE_URL } from '../constants/BASE_URL'
 
 export interface UseFetchPostsProps {
     companies: Company[],
-    patients: Patient[],
+    patientsAPI: Patient[],
     exams: Exam[],
     occupationalHazards: OccupationalRisc[],
     forms: Form[],
@@ -17,7 +17,7 @@ export interface UseFetchPostsProps {
 
 export const useFachtData = (): UseFetchPostsProps  => {
     const [companies, setCompanies] = useState<Company[]>([])
-    const [patients, setPatient] = useState<Patient[]>([])
+    const [patientsAPI, setPatientAPI] = useState<Patient[]>([])
     const [exams, setExams] = useState<Exam[]>([])
     const [occupationalHazards, setOccupationalHazards] = useState<OccupationalRisc[]>([])
     const [forms, setForms] = useState<Form[]>([])
@@ -34,7 +34,7 @@ export const useFachtData = (): UseFetchPostsProps  => {
                 setCompanies(companies.data)
                 
                 const patients = await axios.get(BASE_URL + '/patients')
-                setPatient(patients.data)
+                setPatientAPI(patients.data)
 
                 const exams = await axios.get(BASE_URL + '/exam')
                 setExams(exams.data)
@@ -64,7 +64,7 @@ export const useFachtData = (): UseFetchPostsProps  => {
 
     return {
         companies,
-        patients,
+        patientsAPI,
         exams,
         occupationalHazards,
         forms,
