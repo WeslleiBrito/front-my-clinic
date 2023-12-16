@@ -1,20 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
-import Select, { components } from 'react-select';
+import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { SectionPatient } from './stylePatient';
-import { Patient as PatientI } from '../../types/types';
+import { Name, FormPatient, SuggestionsList, SuggestionItem } from './stylePatient';
+import { useForm } from "../../hooks/useForm";
 
 export const Patient = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, setPatients } = context;
-    const [selectedOption, setSelectedOption] = useState<any>(null);
+    const { loading, patients } = context
     const [listOpions, setListOptions] = useState<{ name: string, rg: string, cpf?: string | undefined }[]>([])
-
-    const CustomInput = (props: any) => (
-        <components.Input {...props} onKeyDown={handleKeyDown} />
-    );
-
+    const [form, onChange] = useForm({name: ""})
+    
     useEffect(() => {
         const list = patients.map((patient) => {
             return {
@@ -26,44 +21,44 @@ export const Patient = () => {
 
         setListOptions([...list])
     }, [patients])
-   
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter' && event.currentTarget === document.activeElement) {
-            const newPatientName = event.currentTarget.value.trim();
+    const handleListOptions = (event: ChangeEvent<HTMLInputElement>): void => {
+        const name = event.target.value
 
-            if (newPatientName !== '' && !patients.some(patient => patient.name === newPatientName)) {
-                const newPatient: PatientI = {
-                    id: "",
-                    cpf: "",
-                    createdAt: "",
-                    name: newPatientName,
-                    rg: "",
-                    updatedAt: ""
-                };
-                setSelectedOption(null); // Limpa a opção selecionada após a adição
-            }
-        }
-    };
-
-    return (
-        <SectionPatient>
-            <Select
-                value={selectedOption}
-                onChange={(selected: any) => setSelectedOption(selected)}
-                components={{ Input: CustomInput }}
-                isClearable
-                isSearchable
-                options={
-                    !loading
-                        ? listOpions.map((patient) => ({
-                            value: patient.name,
-                            label: patient.name
-                        }))
-                        : []
+        if(patients && name.length > 0){
+            const newOptions: {name: string, rg: string, cpf?: string | undefined }[] = patients.filter((patient) => {
+                return patient.name.toLowerCase().includes(name.toLowerCase())
+            }).map((newElement) => {
+                return {
+                    name: newElement.name,
+                    rg: newElement.rg,
+                    cpf: newElement.cpf
                 }
-                placeholder='Selecione um nome ou crie um novo'
+            })
+
+            setListOptions(newOptions)
+        }
+    }
+    
+    return (
+        <FormPatient>
+            <Name placeholder='Selecione um nome ou crie um novo' 
+                id='name' 
+                name='name' 
+                value={form.name} 
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}} 
+                required
+                autoComplete='off'
             />
-        </SectionPatient>
+            <SuggestionsList>
+                {
+                    !loading && form.name.length > 0? listOpions.map((option) => {
+                        return(
+                            <SuggestionItem key={option.rg} value={option.name}>{option.name}</SuggestionItem>
+                        )
+                    }): null
+                }
+            </SuggestionsList>
+        </FormPatient>
     );
 };
