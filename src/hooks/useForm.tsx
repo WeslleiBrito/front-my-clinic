@@ -8,6 +8,16 @@ export const useForm = <T extends Record<string, string>>(initialState: T) => {
         setForm((prevForm) => ({ ...prevForm, [name]: value }));
     };
 
+    const onItemClick = (input: {[key: string]: string | undefined}[]) => {
+        
+        input.forEach(item => {
+            Object.entries(item).forEach((obj) => {
+                const [keyObj, value] = obj
+                setForm((prevForm) => ({...prevForm, [keyObj]: value || ""}))
+            })
+        })
+    }
+
     const clearForm = () => {
         const clearedForm = Object.fromEntries(
             Object.keys(form).map((key) => [key, ''])
@@ -16,5 +26,5 @@ export const useForm = <T extends Record<string, string>>(initialState: T) => {
         setForm(clearedForm);
     };
 
-    return [form, onChange, clearForm] as const;
+    return [form, onChange, onItemClick, clearForm] as const;
 };

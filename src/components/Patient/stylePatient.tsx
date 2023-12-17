@@ -8,15 +8,19 @@ export const FormPatient = styled.form`
     padding: 1vh 1vh 1vh 1vh;
 
 `
-export const SelectName = styled.select`
+
+export const InputName = styled.input.attrs({ type: "text" })`
     width: 70%;
     height: 4vh;
 `
-export const OptionSelectName = styled.option`
-    
+
+export const InputRG = styled.input.attrs({type: "text"})`
+    width: 35%;
+    height: 4vh;
 `
-export const Name = styled.input.attrs({ type: "text" })`
-    width: 70%;
+
+export const InputCPF = styled.input.attrs({type: "text"})`
+    width: 35%;
     height: 4vh;
 `
 
