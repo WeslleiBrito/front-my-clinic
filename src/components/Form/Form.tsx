@@ -1,14 +1,20 @@
 import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { InputName, FormPatient, SuggestionsList, SuggestionItem, InputRG, InputCPF } from './stylePatient';
+import { InputName, FormPatient, SuggestionsList, SuggestionItem, InputRG, InputCPF } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 
-export const Patient = () => {
+export const Form = () => {
     const context = useContext(DataContext);
 
     const { loading, patients } = context
-    const [listOpions, setListOptions] = useState<{ name: string, rg: string, cpf?: string | undefined}[]>([])
-    const [form, onChange, onItemClick] = useForm({name: "", rg: "", cpf: ""})
+    const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, cpf?: string | undefined}[]>([])
+    const [form, onChange, onItemClick] = useForm(
+        {
+            name: "", 
+            rg: "", 
+            cpf: ""
+        }
+    )
     const [selected, setSelected] = useState<boolean>(false)
     const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -21,7 +27,7 @@ export const Patient = () => {
                 }
         })
 
-        setListOptions([...list])
+        setListOptionsPatients([...list])
     }, [patients])
 
     const handleFocus = () => {
@@ -47,7 +53,7 @@ export const Patient = () => {
                 }
             })
 
-            setListOptions(newOptions)
+            setListOptionsPatients(newOptions)
         }
     }
     
@@ -64,7 +70,7 @@ export const Patient = () => {
             />
             <SuggestionsList>
                 {
-                    !loading && form.name.length > 0 && !selected && isInputFocused? listOpions.map((option) => {
+                    !loading && form.name.length > 0 && !selected && isInputFocused? listOpionsPatients.map((option) => {
                         return(
                             <SuggestionItem key={option.rg} 
                             value={option.name} 

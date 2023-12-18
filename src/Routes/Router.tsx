@@ -1,7 +1,7 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { HomePage } from '../Pages/Home/HomePage'
-import { Patient } from '../components/Patient/Patient'
+import { Form } from '../components/Form/Form'
 
 
 export const Router = () => {
@@ -10,7 +10,7 @@ export const Router = () => {
         <BrowserRouter>
             <Routes>
                 <Route index element={<HomePage />} />
-                <Route path='/form' element={<Patient />} />
+                <Route path='/form' element={<Form />} />
             </Routes>
         </BrowserRouter>
     )
