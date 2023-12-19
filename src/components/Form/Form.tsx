@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { InputName, FormPatient, SuggestionsList, SuggestionItem, InputRG, InputCPF } from './styleForm';
+import { FormPatient, InputRG, InputCPF, SectionPatient } from './styleForm';
 import { useForm } from "../../hooks/useForm";
-
+import Select from 'react-select'
 export const Form = () => {
     const context = useContext(DataContext);
 
@@ -15,8 +15,7 @@ export const Form = () => {
             cpf: ""
         }
     )
-    const [selected, setSelected] = useState<boolean>(false)
-    const [isInputFocused, setIsInputFocused] = useState(false);
+ 
 
     useEffect(() => {
         const list = patients.map((patient) => {
@@ -30,14 +29,15 @@ export const Form = () => {
         setListOptionsPatients([...list])
     }, [patients])
 
-    const handleFocus = () => {
-        setIsInputFocused(true);
-    };
+    //useEffect(() => console.log(form.name), [form.name])
 
-    const handleBlur = () => {
-        setIsInputFocused(false);
-    };
     
+    const handleInputChange = (newValue: any, actionMeta: any) => {
+        if (actionMeta.action === 'input-change') {
+            // Atualiza o estado com o valor inserido pelo usuário
+            onChange({ target: { name: 'name', value: newValue } } as ChangeEvent<HTMLInputElement>);
+        }
+    }
 
     const handleListOptions = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
@@ -58,65 +58,45 @@ export const Form = () => {
     }
     
     return (
-        <FormPatient>
-            <InputName placeholder='Selecione um nome ou crie um novo' 
-                id='name' 
-                name='name' 
-                value={form.name} 
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event); setSelected(false)}}
-                required 
-                onClick={handleFocus}   
-                autoComplete='off'
-            />
-            <SuggestionsList>
-                {
-                    !loading && form.name.length > 0 && !selected && isInputFocused? listOpionsPatients.map((option) => {
-                        return(
-                            <SuggestionItem key={option.rg} 
-                            value={option.name} 
-                            onClick={() => 
-                                {
-                                    {onItemClick(
-                                        [
-                                            {
-                                                "name": option.name
-                                            },
-                                            {
-                                                "rg": option.rg
-                                            },
-                                            {
-                                                "cpf": option.cpf
-                                            }
-                                        ]
-                                    ); 
-                                    setSelected(true)}  
-                                }
-                            }
-                            >{option.name}
-                            </SuggestionItem>
-                        )
-                    }): null
-                }
-            </SuggestionsList>
-            <InputRG placeholder="RG"
-                id="rg"
-                name="rg"
-                value={form.rg}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event); setSelected(false)}}
-                onClick={handleBlur}
-                required
-                autoComplete="off"
-                pattern="/^\d{1,2}([.-]?)\d{3}\1\d{3}\1\d{1,2}$/"
-            />
-            <InputCPF placeholder="CPF"
-                id="cpf"
-                name="cpf"
-                value={form.cpf}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event); setSelected(false)}}
-                onClick={handleBlur}
-                autoComplete="off"
-                pattern="/^\d{3}([.-]?)\d{3}\1\d{3}\1\d{2}$/"
-            />
+        <FormPatient >
+            <SectionPatient>
+
+                <Select 
+                    options={!loading ? listOpionsPatients.map(patient => ({ label: patient.name, value: patient.name })) : []}
+                    value={{ label: form.name, value: form.name }}
+                    isSearchable
+                    onChange={(selectedOption: any) => {
+                        // Atualiza o estado com a opção selecionada
+                        onChange({ target: { name: 'name', value: selectedOption.value } } as ChangeEvent<HTMLInputElement>);
+                        const itemSelected = listOpionsPatients.find((item) => item.name === selectedOption.value) as {name: string, rg: string, cpf: string | undefined}
+
+                        onItemClick([
+                            {name: itemSelected.name},
+                            {rg: itemSelected.rg},
+                            {cpf: itemSelected.cpf ? itemSelected.cpf : ""}
+                        ])
+                    }}
+                    onInputChange={handleInputChange}
+                    noOptionsMessage={() => "Nenhum registro encontrado"}
+                /> 
+                <InputRG placeholder="RG"
+                    id="rg"
+                    name="rg"
+                    value={form.rg}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
+                    required
+                    autoComplete="off"
+                    pattern="/^\d{1,2}([.-]?)\d{3}\u0021\d{3}\u0021\d{1,2}$/"
+                />
+                <InputCPF placeholder="CPF"
+                    id="cpf"
+                    name="cpf"
+                    value={form.cpf}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
+                    autoComplete="off"
+                    pattern="/^\d{3}([.-]?)\d{3}\u0021\d{3}\u0021\d{2}$/"
+                />
+            </SectionPatient>
         </FormPatient>
     );
 };

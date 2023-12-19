@@ -8,7 +8,7 @@ export const useForm = <T extends Record<string, string>>(initialState: T) => {
         setForm((prevForm) => ({ ...prevForm, [name]: value }));
     };
 
-    const onItemClick = (input: {[key: string]: string | undefined}[]) => {
+    const onItemClick = (input: {[key: string]: any}[]) => {
         
         input.forEach(item => {
             Object.entries(item).forEach((obj) => {
