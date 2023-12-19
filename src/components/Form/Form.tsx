@@ -1,18 +1,22 @@
 import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { FormPatient, InputRG, InputCPF, SectionPatient } from './styleForm';
+import { FormPatient, InputRG, InputCPF, SectionPatient, SectionCompany, InputCNPJ } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
 export const Form = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients } = context
+    const { loading, patients, companies } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, cpf?: string | undefined}[]>([])
+    const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
+
     const [form, onChange, onItemClick] = useForm(
         {
             name: "", 
             rg: "", 
-            cpf: ""
+            cpf: "",
+            nameCompany: "",
+            cnpj: ""
         }
     )
  
@@ -29,14 +33,23 @@ export const Form = () => {
         setListOptionsPatients([...list])
     }, [patients])
 
-    //useEffect(() => console.log(form.name), [form.name])
+    useEffect(() => {
+        const list = companies.map((company) => {
+            return {
+                    nameCompany: company.name,
+                    cnpj: company.cnpj
+                }
+        })
 
+        setListOptionsCompanies([...list])
+    }, [companies])
     
-    const handleInputChange = (newValue: any, actionMeta: any) => {
+    const handleInputChange = (newValue: any, propertyName: string, actionMeta: any) => {
         if (actionMeta.action === 'input-change') {
             // Atualiza o estado com o valor inserido pelo usuário
-            onChange({ target: { name: 'name', value: newValue } } as ChangeEvent<HTMLInputElement>);
+            onChange({ target: { name: propertyName, value: newValue } } as ChangeEvent<HTMLInputElement>);
         }
+   
     }
 
     const handleListOptions = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -75,8 +88,9 @@ export const Form = () => {
                             {rg: itemSelected.rg},
                             {cpf: itemSelected.cpf ? itemSelected.cpf : ""}
                         ])
+                        
                     }}
-                    onInputChange={handleInputChange}
+                    onInputChange={(newValue, actionMeta) => {handleInputChange(newValue, 'name', actionMeta)}}
                     noOptionsMessage={() => "Nenhum registro encontrado"}
                 /> 
                 <InputRG placeholder="RG"
@@ -97,6 +111,34 @@ export const Form = () => {
                     pattern="/^\d{3}([.-]?)\d{3}\u0021\d{3}\u0021\d{2}$/"
                 />
             </SectionPatient>
+            <SectionCompany>
+            <Select 
+                    options={!loading ? listOpionsCompanies.map(company => ({ label: company.nameCompany, value: company.nameCompany })) : []}
+                    value={{ label: form.nameCompany, value: form.nameCompany }}
+                    isSearchable
+                    onChange={(selectedOption: any) => {
+                        // Atualiza o estado com a opção selecionada
+                        onChange({ target: { name: 'nameCompany', value: selectedOption.value } } as ChangeEvent<HTMLInputElement>);
+                        const itemSelected = listOpionsCompanies.find((item) => item.nameCompany === selectedOption.value) as {nameCompany: string, cnpj: string}
+
+                        onItemClick([
+                            {nameCompany: itemSelected.nameCompany},
+                            {cnpj: itemSelected.cnpj}
+                        ])
+                    }}
+                    onInputChange={(newValue, actionMeta) => handleInputChange(newValue, 'nameCompany', actionMeta)}
+                    noOptionsMessage={() => "Nenhum registro encontrado"}
+                /> 
+                <InputCNPJ placeholder="CNPJ"
+                    id="cnpj"
+                    name="cnpj"
+                    value={form.cnpj}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
+                    required
+                    autoComplete="off"
+                />
+
+            </SectionCompany>
         </FormPatient>
     );
 };

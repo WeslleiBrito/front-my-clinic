@@ -23,6 +23,10 @@ export const InputCPF = styled.input.attrs({type: "text"})`
     width: 35%;
     height: 4vh;
 `
+export const InputCNPJ = styled.input.attrs({type: "text"})`
+    width: 35%;
+    height: 4vh;
+`
 
 export const SuggestionsList = styled.ul`
   list-style-type: none;
@@ -44,6 +48,9 @@ export const SuggestionItem = styled.li`
 `;
 
 export const SectionPatient = styled.section`
+  
+`
+export const SectionCompany = styled.section`
   
 `
 
