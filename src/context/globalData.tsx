@@ -10,7 +10,7 @@ interface DataContextProps {
 
 export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
 
-    const {companies, exams, forms, occupationalHazards, patientsAPI, error, loading} = useFachtData()
+    const {companies, exams, forms, occupationalHazards, patientsAPI, error, loading, typeExamAso} = useFachtData()
     const [patients, setPatients] = useState<Patient[]>([])
     
     useEffect(() => setPatients([...patientsAPI]), [patientsAPI])
@@ -19,6 +19,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         companies,
         exams,
         forms,
+        typeExamAso,
         occupationalHazards,
         patients,
         error,

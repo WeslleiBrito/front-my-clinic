@@ -68,3 +68,20 @@ export const OptionsName = styled.option`
     background-color: #eeeeee;
   }
 `
+
+export const SectionTypeExamAso = styled.section`
+  
+`
+export const ItemTypeExam = styled.input.attrs({type: "radio"})`
+  
+`
+export const LableItem = styled.label`
+  
+`
+
+export const SectionRiscksOccupationais = styled.section`
+`
+
+export const ItemRisckOccupational = styled.input.attrs({type: "checkbox"})`
+  
+`

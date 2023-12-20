@@ -81,7 +81,15 @@ export interface ContextInterface {
     exams: Exam[],
     occupationalHazards: OccupationalRisc[],
     forms: Form[],
+    typeExamAso: TypeExamAso[],
     loading: boolean,
     error: boolean,
     setPatients: Function
-  };
+}
+
+export interface TypeExamAso {
+    id: string,
+    name: string,
+    createdAt: string,
+    updatedAt: string
+}

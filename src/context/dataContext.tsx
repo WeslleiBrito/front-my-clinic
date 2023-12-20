@@ -7,6 +7,7 @@ const defaultContextValue = {
     exams: [],
     occupationalHazards: [],
     forms: [],
+    typeExamAso: [],
     loading: true,
     error: false,
     setPatients: () => {}

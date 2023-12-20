@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { FormPatient, InputRG, InputCPF, SectionPatient, SectionCompany, InputCNPJ } from './styleForm';
+import { FormPatient, InputRG, InputCPF, SectionPatient, SectionCompany, InputCNPJ, SectionTypeExamAso, ItemTypeExam, LableItem, ItemRisckOccupational } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
 export const Form = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, cpf?: string | undefined}[]>([])
     const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
+    const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{id: string}[]>([])
 
     const [form, onChange, onItemClick] = useForm(
         {
@@ -16,11 +17,11 @@ export const Form = () => {
             rg: "", 
             cpf: "",
             nameCompany: "",
-            cnpj: ""
+            cnpj: "",
+            typeExamAso: ""
         }
     )
- 
-
+        
     useEffect(() => {
         const list = patients.map((patient) => {
             return {
@@ -30,7 +31,16 @@ export const Form = () => {
                 }
         })
 
-        setListOptionsPatients([...list])
+        setListOptionsPatients([...list].sort((a, b) => {
+                        
+            if(a.name < b.name){
+                return - 1
+            }else if(a.name > b.name){
+                return 1
+            }
+
+            return 0
+        }))
     }, [patients])
 
     useEffect(() => {
@@ -41,9 +51,18 @@ export const Form = () => {
                 }
         })
 
-        setListOptionsCompanies([...list])
+        setListOptionsCompanies([...list].sort((a, b) => {
+                        
+            if(a.nameCompany < b.nameCompany){
+                return - 1
+            }else if(a.nameCompany > b.nameCompany){
+                return 1
+            }
+
+            return 0
+        }))
     }, [companies])
-    
+
     const handleInputChange = (newValue: any, propertyName: string, actionMeta: any) => {
         if (actionMeta.action === 'input-change') {
             // Atualiza o estado com o valor inserido pelo usuário
@@ -70,8 +89,47 @@ export const Form = () => {
         }
     }
     
+    const handleCheckboxRisck = (id: string) => {
+        
+        const elementExist = occupationaisRisckForm.find((risck) => risck.id === id)
+
+        if(elementExist){
+            const filter = occupationaisRisckForm.filter((item) => {return item.id !== id})
+            setOccupationaisRisckForm(filter)
+        }else{
+            setOccupationaisRisckForm([...occupationaisRisckForm, {id}])
+        }
+
+    }
+
     return (
         <FormPatient >
+            <SectionTypeExamAso>
+                {
+                    !loading ? typeExamAso.sort((a, b) => {
+
+                        if(a.name < b.name){
+                            return - 1
+                        }else if(a.name > b.name){
+                            return 1
+                        }
+
+                        return 0
+                    }).map((type) => {
+                        return(
+                            <LableItem key={type.id} >
+                                <ItemTypeExam   
+                                    value={type.id}
+                                    name='typeExamAso'
+                                    checked={type.id === form.typeExamAso}
+                                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event)}}
+                                />
+                                {type.name}
+                            </LableItem>
+                        )
+                    }): null
+                }
+            </SectionTypeExamAso>
             <SectionPatient>
 
                 <Select 
@@ -139,6 +197,31 @@ export const Form = () => {
                 />
 
             </SectionCompany>
+            <SectionTypeExamAso>
+                {
+                    !loading ? occupationalHazards.sort((a, b) => {
+
+                        if(a.name < b.name){
+                            return - 1
+                        }else if(a.name > b.name){
+                            return 1
+                        }
+
+                        return 0
+                    }).map((risck) => {
+                        return(
+                            <LableItem key={risck.id}>
+                                <ItemRisckOccupational
+                                    value={risck.id}
+                                    onChange={() => handleCheckboxRisck(risck.id)}
+
+                                />
+                                {risck.name}
+                            </LableItem>
+                        )
+                    }) : null
+                }
+            </SectionTypeExamAso>
         </FormPatient>
     );
 };
