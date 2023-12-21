@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, ChangeEvent } from "react";
+import { useContext, useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { DataContext } from '../../context/dataContext';
 import { FormPatient, 
     InputRG, 
@@ -16,7 +16,9 @@ import { FormPatient,
     SectionFunction, 
     InputFunctionPatient,
     StatusPatientFit,
-    StatusPatientUnfit
+    StatusPatientUnfit,
+    InputComments,
+    ButtonSubmit
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
@@ -31,7 +33,7 @@ export const Form = () => {
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{id: string}[]>([])
     const [examsForm, setExamForm] = useState<{id: string, date: string}[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
-
+    const [comments, setComments] = useState('');
     const [form, onChange, onItemClick] = useForm(
         {
             name: "", 
@@ -159,9 +161,35 @@ export const Form = () => {
         });
     }
 
+    const handleComments = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = event.target.value;
+        setComments(newValue);
+    }
+    const createForm = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        const regexRG = /^\d{1,2}(\d{3})?(\d{3})?-?\d{1,2}$/
+        const regexCPF = /^\d{3}(\.\d{3}){2}-?\d{2}$/
+
+        if(!form.typeExamAso){
+            alert("O tipo do aso não foi informado!")
+            return
+        }
+
+        if(!regexRG.test(form.rg)){
+            alert("RG inválido verifique e tente novamente.")
+            return
+        }
+        console.log(form.cpf);
+        
+        if(form.cpf && !regexCPF.test(form.cpf)){
+            alert("CPF inválido verifique e tente novamente.")
+            return
+        }
+
+    } 
 
     return (
-        <FormPatient >
+        <FormPatient onSubmit={createForm}>
             <SectionTypeExamAso>
                 {
                     !loading ? typeExamAso.sort((a, b) => {
@@ -209,6 +237,7 @@ export const Form = () => {
                         }}
                         onInputChange={(newValue, actionMeta) => {handleInputChange(newValue, 'name', actionMeta)}}
                         noOptionsMessage={() => "Nenhum registro encontrado"}
+                        required
                     /> 
                     
                 </LableItem>
@@ -220,7 +249,6 @@ export const Form = () => {
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
                     required
                     autoComplete="off"
-                    pattern="/^\d{1,2}([.-]?)\d{3}\u0021\d{3}\u0021\d{1,2}$/"
                 />
                 <InputCPF placeholder="CPF"
                     id="cpf"
@@ -228,7 +256,6 @@ export const Form = () => {
                     value={form.cpf}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
                     autoComplete="off"
-                    pattern="/^\d{3}([.-]?)\d{3}\u0021\d{3}\u0021\d{2}$/"
                 />
             </SectionPatient>
             <SectionCompany>
@@ -250,6 +277,7 @@ export const Form = () => {
                     }}
                     onInputChange={(newValue, actionMeta) => handleInputChange(newValue, 'nameCompany', actionMeta)}
                     noOptionsMessage={() => "Nenhum registro encontrado"}
+                    required
                 /> 
             </LableItem>
             
@@ -343,6 +371,17 @@ export const Form = () => {
                     Inapto
                 </LableItem>
             </SectionFunction>
+            <InputComments
+                id="comments"
+                name="comments"
+                value={comments}
+                onChange={handleComments}
+                rows={5}
+                cols={50}       
+                style={{resize: 'none'}}  
+                placeholder="Obeservações..."   
+            />
+            <ButtonSubmit value={"Enviar"}/>
         </FormPatient>
     );
 };

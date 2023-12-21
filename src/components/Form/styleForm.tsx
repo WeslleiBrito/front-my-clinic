@@ -82,3 +82,8 @@ export const StatusPatientUnfit = styled.input.attrs({type: "radio"})`
 `
 export const SectionFunction = styled.section`
 `
+export const InputComments = styled.textarea`
+`
+export const ButtonSubmit = styled.input.attrs({type: "submit"})`
+  
+`

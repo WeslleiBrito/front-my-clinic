@@ -36,12 +36,14 @@ export interface Form {
     exams: {
         id: string,
         name: string,
-        price: number
+        price: number,
+        date: string
     }[],
     OccupationalHazards: {
         id: string,
         name: string
-    }[]   
+    }[],
+    comments: string  
 }
 
 export interface Exam {
