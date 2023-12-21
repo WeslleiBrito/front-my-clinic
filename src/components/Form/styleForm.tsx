@@ -42,10 +42,8 @@ export const SuggestionItem = styled.li`
   }
 `
 export const SectionPatient = styled.section`
-  
 `
 export const SectionCompany = styled.section`
-  
 `
 export const SelectNamePatient = styled.select`
     width: 70%;
@@ -61,25 +59,26 @@ export const OptionsName = styled.option`
   }
 `
 export const SectionTypeExamAso = styled.section`
-  
 `
 export const ItemTypeExam = styled.input.attrs({type: "radio"})`
-  
 `
-export const LableItem = styled.label`
-  
+export const LableItem = styled.label` 
 `
 export const SectionRiscksOccupationais = styled.section`
 `
 export const ItemRisckOccupational = styled.input.attrs({type: "checkbox"})`
-  
 `
-export const SectionListExams = styled.section`
-  
+export const SectionListExams = styled.section` 
 `
-export const ItemExamCheckbox = styled.input.attrs({type: "checkbox"})`
-  
+export const ItemExamCheckbox = styled.input.attrs({type: "checkbox"})` 
 `
-export const InputDateExam = styled.input.attrs({type: "date"})`
-  
+export const InputDateExam = styled.input.attrs({type: "date"})`  
+`
+export const InputFunctionPatient = styled.input.attrs({type: "text"})`  
+`
+export const StatusPatientFit = styled.input.attrs({type: "radio"})`
+`
+export const StatusPatientUnfit = styled.input.attrs({type: "radio"})`
+`
+export const SectionFunction = styled.section`
 `

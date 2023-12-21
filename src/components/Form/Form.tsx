@@ -1,6 +1,23 @@
 import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { FormPatient, InputRG, InputCPF, SectionPatient, SectionCompany, InputCNPJ, SectionTypeExamAso, ItemTypeExam, LableItem, ItemRisckOccupational, SectionListExams, ItemExamCheckbox, InputDateExam } from './styleForm';
+import { FormPatient, 
+    InputRG, 
+    InputCPF, 
+    SectionPatient, 
+    SectionCompany, 
+    InputCNPJ, 
+    SectionTypeExamAso, 
+    ItemTypeExam, 
+    LableItem, 
+    ItemRisckOccupational, 
+    SectionListExams, 
+    ItemExamCheckbox, 
+    InputDateExam, 
+    SectionFunction, 
+    InputFunctionPatient,
+    StatusPatientFit,
+    StatusPatientUnfit
+} from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
 import { format, addDays } from 'date-fns';
@@ -13,6 +30,7 @@ export const Form = () => {
     const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{id: string}[]>([])
     const [examsForm, setExamForm] = useState<{id: string, date: string}[]>([])
+    const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
 
     const [form, onChange, onItemClick] = useForm(
         {
@@ -21,7 +39,8 @@ export const Form = () => {
             cpf: "",
             nameCompany: "",
             cnpj: "",
-            typeExamAso: ""
+            typeExamAso: "",
+            functionPatient: ""
         }
     )
         
@@ -73,7 +92,6 @@ export const Form = () => {
         }
    
     }
-
     const handleListOptions = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
 
@@ -91,7 +109,6 @@ export const Form = () => {
             setListOptionsPatients(newOptions)
         }
     }
-    
     const handleCheckboxRisck = (id: string) => {
         
         const elementExist = occupationaisRisckForm.find((risck) => risck.id === id)
@@ -120,7 +137,6 @@ export const Form = () => {
         }
 
     }
-
     const handleDateChange = (selectedDate: Date | undefined, examId: string) => {
         if (!selectedDate) {
             // Se a data for vazia ou indefinida, não faça nada
@@ -141,7 +157,9 @@ export const Form = () => {
     
             return updatedExams;
         });
-    };
+    }
+
+
     return (
         <FormPatient >
             <SectionTypeExamAso>
@@ -171,26 +189,30 @@ export const Form = () => {
                 }
             </SectionTypeExamAso>
             <SectionPatient>
+                <LableItem>
+                    Paciente
+                    <Select
+                        options={!loading ? listOpionsPatients.map(patient => ({ label: patient.name, value: patient.name })) : []}
+                        value={{ label: form.name, value: form.name }}
+                        isSearchable
+                        onChange={(selectedOption: any) => {
+                            // Atualiza o estado com a opção selecionada
+                            onChange({ target: { name: 'name', value: selectedOption.value } } as ChangeEvent<HTMLInputElement>);
+                            const itemSelected = listOpionsPatients.find((item) => item.name === selectedOption.value) as {name: string, rg: string, cpf: string | undefined}
 
-                <Select
-                    options={!loading ? listOpionsPatients.map(patient => ({ label: patient.name, value: patient.name })) : []}
-                    value={{ label: form.name, value: form.name }}
-                    isSearchable
-                    onChange={(selectedOption: any) => {
-                        // Atualiza o estado com a opção selecionada
-                        onChange({ target: { name: 'name', value: selectedOption.value } } as ChangeEvent<HTMLInputElement>);
-                        const itemSelected = listOpionsPatients.find((item) => item.name === selectedOption.value) as {name: string, rg: string, cpf: string | undefined}
-
-                        onItemClick([
-                            {name: itemSelected.name},
-                            {rg: itemSelected.rg},
-                            {cpf: itemSelected.cpf ? itemSelected.cpf : ""}
-                        ])
-                        
-                    }}
-                    onInputChange={(newValue, actionMeta) => {handleInputChange(newValue, 'name', actionMeta)}}
-                    noOptionsMessage={() => "Nenhum registro encontrado"}
-                /> 
+                            onItemClick([
+                                {name: itemSelected.name},
+                                {rg: itemSelected.rg},
+                                {cpf: itemSelected.cpf ? itemSelected.cpf : ""}
+                            ])
+                            
+                        }}
+                        onInputChange={(newValue, actionMeta) => {handleInputChange(newValue, 'name', actionMeta)}}
+                        noOptionsMessage={() => "Nenhum registro encontrado"}
+                    /> 
+                    
+                </LableItem>
+                
                 <InputRG placeholder="RG"
                     id="rg"
                     name="rg"
@@ -210,7 +232,9 @@ export const Form = () => {
                 />
             </SectionPatient>
             <SectionCompany>
-            <Select 
+            <LableItem>
+                Empresa
+                <Select 
                     options={!loading ? listOpionsCompanies.map(company => ({ label: company.nameCompany, value: company.nameCompany })) : []}
                     value={{ label: form.nameCompany, value: form.nameCompany }}
                     isSearchable
@@ -227,6 +251,8 @@ export const Form = () => {
                     onInputChange={(newValue, actionMeta) => handleInputChange(newValue, 'nameCompany', actionMeta)}
                     noOptionsMessage={() => "Nenhum registro encontrado"}
                 /> 
+            </LableItem>
+            
                 <InputCNPJ placeholder="CNPJ"
                     id="cnpj"
                     name="cnpj"
@@ -293,6 +319,30 @@ export const Form = () => {
                     }) : null
                 }
             </SectionListExams>
+            <SectionFunction>
+                <InputFunctionPatient 
+                    id="functionPatient"
+                    name="functionPatient"
+                    value={form.functionPatient}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event)}}
+                    required
+                    autoComplete="off"
+                />
+                <LableItem>
+                    <StatusPatientFit
+                        onChange={() => setStatusPatient(true)}
+                        checked={statusPatient === true}
+                    />
+                    Apto
+                </LableItem>
+                <LableItem>
+                    <StatusPatientUnfit
+                        onChange={() => setStatusPatient(false)}
+                        checked={statusPatient === false}
+                    />
+                    Inapto
+                </LableItem>
+            </SectionFunction>
         </FormPatient>
     );
 };
