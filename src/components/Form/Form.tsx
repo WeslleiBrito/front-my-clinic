@@ -1,15 +1,18 @@
 import { useContext, useEffect, useState, ChangeEvent } from "react";
 import { DataContext } from '../../context/dataContext';
-import { FormPatient, InputRG, InputCPF, SectionPatient, SectionCompany, InputCNPJ, SectionTypeExamAso, ItemTypeExam, LableItem, ItemRisckOccupational } from './styleForm';
+import { FormPatient, InputRG, InputCPF, SectionPatient, SectionCompany, InputCNPJ, SectionTypeExamAso, ItemTypeExam, LableItem, ItemRisckOccupational, SectionListExams, ItemExamCheckbox, InputDateExam } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
+import { format, addDays } from 'date-fns';
+
 export const Form = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, cpf?: string | undefined}[]>([])
     const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{id: string}[]>([])
+    const [examsForm, setExamForm] = useState<{id: string, date: string}[]>([])
 
     const [form, onChange, onItemClick] = useForm(
         {
@@ -101,7 +104,44 @@ export const Form = () => {
         }
 
     }
+    const handleCheckboxExam = (id: string) => {
+        
+        const elementExist = examsForm.find((exam) => exam.id === id)
 
+        if(elementExist){
+            const filter = examsForm.filter((item) => {return item.id !== id})
+            setExamForm(filter)
+        }else{
+            const currentDate = new Date();
+            const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
+            .toString()
+            .padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+            setExamForm([...examsForm, {id, date: formattedDate}])
+        }
+
+    }
+
+    const handleDateChange = (selectedDate: Date | undefined, examId: string) => {
+        if (!selectedDate) {
+            // Se a data for vazia ou indefinida, não faça nada
+            return;
+        }
+    
+        const currentDate = addDays(selectedDate, 1);
+        const formattedDate = format(currentDate, 'yyyy-MM-dd');
+    
+        // Atualize o estado examsForm com a nova data
+        setExamForm((prevExams) => {
+            const updatedExams = prevExams.map((exam) => {
+                if (exam.id === examId) {
+                    return { ...exam, date: formattedDate };
+                }
+                return exam;
+            });
+    
+            return updatedExams;
+        });
+    };
     return (
         <FormPatient >
             <SectionTypeExamAso>
@@ -132,7 +172,7 @@ export const Form = () => {
             </SectionTypeExamAso>
             <SectionPatient>
 
-                <Select 
+                <Select
                     options={!loading ? listOpionsPatients.map(patient => ({ label: patient.name, value: patient.name })) : []}
                     value={{ label: form.name, value: form.name }}
                     isSearchable
@@ -222,6 +262,37 @@ export const Form = () => {
                     }) : null
                 }
             </SectionTypeExamAso>
+            <SectionListExams>
+                {
+                    !loading ? exams.sort((a, b) => {
+
+                        if(a.name < b.name){
+                            return - 1
+                        }else if(a.name > b.name){
+                            return 1
+                        }
+
+                        return 0
+                    }).map((exam) => {
+                        return(
+                            <LableItem key={exam.id}>
+                                <ItemExamCheckbox
+                                    value={exam.id}
+                                    onChange={() => handleCheckboxExam(exam.id)}
+                                />
+                                {exam.name}
+                                {
+                                    examsForm.find((item) => item.id === exam.id) ? <InputDateExam value={
+                                        (examsForm.find((item) => item.id === exam.id) as {id: string, date: string}).date
+                                    }
+                                    onChange={(e) => handleDateChange(new Date(e.target.value), exam.id)}
+                                    /> : null
+                                }
+                            </LableItem>
+                        )
+                    }) : null
+                }
+            </SectionListExams>
         </FormPatient>
     );
 };
