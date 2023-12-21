@@ -168,10 +168,20 @@ export const Form = () => {
     const createForm = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const regexRG = /^\d{1,2}(\d{3})?(\d{3})?-?\d{1,2}$/
-        const regexCPF = /^\d{3}(\.\d{3}){2}-?\d{2}$/
+        const regexCPF = /^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{11})$/
 
         if(!form.typeExamAso){
             alert("O tipo do aso não foi informado!")
+            return
+        }
+
+        if(!form.name){
+            alert("O nome do paciente é obrigatório!")
+            return
+        }
+
+        if(!form.nameCompany){
+            alert("O nome da empresa é obrigatório!")
             return
         }
 
@@ -179,10 +189,14 @@ export const Form = () => {
             alert("RG inválido verifique e tente novamente.")
             return
         }
-        console.log(form.cpf);
         
         if(form.cpf && !regexCPF.test(form.cpf)){
             alert("CPF inválido verifique e tente novamente.")
+            return
+        }
+
+        if(occupationaisRisckForm.length === 0){
+            alert("É preciso informar pelo menos um risco ocupacional.")
             return
         }
 
