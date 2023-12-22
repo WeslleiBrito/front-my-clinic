@@ -95,3 +95,19 @@ export interface TypeExamAso {
     createdAt: string,
     updatedAt: string
 }
+
+export interface InputCreateForm {
+    idCompany: string,
+    idPatient: string,
+    idTypeExamAso: string,
+    functionPatient: string,
+    status: boolean,
+    idExams: {
+        id: string,
+        date: Date
+    }[],
+    idOccupationalHazards: {
+        id: string
+    }[],
+    comments? : string 
+}
