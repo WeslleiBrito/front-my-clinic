@@ -12,6 +12,7 @@ export interface UseFetchPostsProps {
     typeExamAso: TypeExamAso[],
     loading: boolean,
     error: boolean
+    setLoading: Function
     
   }
 
@@ -75,7 +76,8 @@ export const useFachtData = (): UseFetchPostsProps  => {
         forms,
         typeExamAso,
         loading,
-        error
+        error,
+        setLoading
     }
     
 }

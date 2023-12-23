@@ -86,7 +86,8 @@ export interface ContextInterface {
     typeExamAso: TypeExamAso[],
     loading: boolean,
     error: boolean,
-    setPatients: Function
+    setPatients: Function,
+    createPatient: Function
 }
 
 export interface TypeExamAso {
@@ -110,4 +111,10 @@ export interface InputCreateForm {
         id: string
     }[],
     comments? : string 
+}
+
+export interface CreatePatientAPI {
+    name: string,
+    rg: string,
+    cpf?: string
 }

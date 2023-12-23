@@ -87,3 +87,11 @@ export const InputComments = styled.textarea`
 export const ButtonSubmit = styled.input.attrs({type: "submit"})`
   
 `
+export const ButtonNew = styled.input.attrs({type: "button"})`
+`
+export const ButtonEdit = styled.input.attrs({type: "button"})`
+`
+export const ButtonCancel = styled.input.attrs({type: "button"})`
+`
+export const ButtonSave = styled.button`
+`

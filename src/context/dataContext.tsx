@@ -10,7 +10,9 @@ const defaultContextValue = {
     typeExamAso: [],
     loading: true,
     error: false,
-    setPatients: () => {}
+    setPatients: () => {},
+    createPatient: () => {}
+
   };
 
 
