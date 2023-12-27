@@ -17,11 +17,7 @@ import { FormPatient,
     StatusPatientFit,
     StatusPatientUnfit,
     InputComments,
-    ButtonSubmit, 
-    ButtonNew,
-    ButtonEdit,
-    ButtonSave,
-    ButtonCancel
+    ButtonSubmit
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
@@ -30,22 +26,19 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { InputCreateForm, Patient } from "../../types/types";
 
+
 export const Form = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, id: string, cpf?: string | undefined}[]>([])
     const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{id: string}[]>([])
     const [examsForm, setExamForm] = useState<{id: string, date: Date | null}[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
     const [modifyPatient, setModifyPatient] = useState<boolean>(false)
-    const [selectedPatient, setSelectedPatient] = useState<{ name: string, rg: string, id: string, cpf: string | undefined}>({
-        name: "",
-        rg: "",
-        cpf: "",
-        id: ""
-    })
+    const [patientId, setPatientId] = useState<string>("")
+
     const [comments, setComments] = useState('');
     const [form, onChange, onItemClick] = useForm(
         {
@@ -234,14 +227,21 @@ export const Form = () => {
             return
         }
 
+        if(patientId.length === 0){
+
+            const input: {name: string, rg: string, cpf?: string} = {
+                name: form.name,
+                rg: form.rg,
+                cpf: form.cpf
+            }
+
+            createPatient(input)
+
+            setPatientId("")
+        }
+
     } 
     
-    const handleSelectPatient = (id: string) => {
-        const patient = patients.find((patient) => patient.id === id) as {name: string, id: string, rg: string, cpf: string | undefined}
-
-        setSelectedPatient(patient)
-    }
-
     return (
         <FormPatient onSubmit={createForm}>
             
@@ -290,16 +290,14 @@ export const Form = () => {
                                 {cpf: itemSelected.cpf ? itemSelected.cpf : ""}
                             ]);
 
-                            handleSelectPatient(itemSelected.id)
+                            setPatientId(itemSelected.id)
                             
                         }}
                         onInputChange={(newValue, actionMeta) => {handleInputChange(newValue, 'name', actionMeta)}}
                         noOptionsMessage={() => "Nenhum registro encontrado"}
                         required
                     /> 
-                    <ButtonNew onClick={() => {setModifyPatient(true); clearPatient()}} value={"Novo"} disabled={modifyPatient ? true : false}/>
-                    <ButtonEdit onClick={() => {setModifyPatient(true)}} value={"Editar"} disabled={modifyPatient ? true : false}/>
-                    <ButtonCancel onClick={() => {setModifyPatient(false); clearPatient()}} value={"Cancelar"} disabled={modifyPatient ? false : true}/>
+                    
                 </LableItem>
                 
                 <InputRG placeholder="RG"
@@ -309,7 +307,6 @@ export const Form = () => {
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
                     required
                     autoComplete="off"
-                    disabled={modifyPatient ? false : true}
                 />
                 <InputCPF placeholder="CPF"
                     id="cpf"
@@ -317,7 +314,6 @@ export const Form = () => {
                     value={form.cpf}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
                     autoComplete="off"
-                    disabled={modifyPatient ? false : true}
                 />
             </SectionPatient>
             <SectionCompany>

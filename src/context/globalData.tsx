@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import { DataContext } from './dataContext'
 import { useFachtData } from '../hooks/useFechtDataHook'
 import { CreatePatientAPI, Patient } from '../types/types'
-import axios, { AxiosError } from 'axios';
+import axios  from 'axios';
 import { BASE_URL } from '../../src/constants/BASE_URL'
 
 interface DataContextProps {
@@ -18,24 +18,21 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
 
     const createPatient = async (input: CreatePatientAPI) => {
         try {
-
+            
             await axios.post(BASE_URL + '/patients',
                 input
             )
 
-            const result: Patient[] = await axios.get(BASE_URL + '/patients')
-
-            setLoading(true)
+            const result: Patient[] = (await axios.get(BASE_URL + '/patients')).data
 
             setPatients(result)
-
-            setLoading(false)
 
         } catch (error) {
             console.log(error)
             setLoading(false)
         }
     }
+
     const context = {
         companies,
         exams,
@@ -46,7 +43,8 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         error,
         loading,
         setPatients,
-        createPatient
+        createPatient,
+        setLoading
     }
 
     return <DataContext.Provider value={context}>{props.children}</DataContext.Provider>

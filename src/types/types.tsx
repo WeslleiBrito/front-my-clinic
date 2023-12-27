@@ -87,7 +87,8 @@ export interface ContextInterface {
     loading: boolean,
     error: boolean,
     setPatients: Function,
-    createPatient: Function
+    createPatient: Function,
+    setLoading: Function
 }
 
 export interface TypeExamAso {

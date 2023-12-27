@@ -11,7 +11,8 @@ const defaultContextValue = {
     loading: true,
     error: false,
     setPatients: () => {},
-    createPatient: () => {}
+    createPatient: () => {},
+    setLoading: () => {}
 
   };
 
