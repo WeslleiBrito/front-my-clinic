@@ -17,28 +17,29 @@ import { FormPatient,
     StatusPatientFit,
     StatusPatientUnfit,
     InputComments,
-    ButtonSubmit
+    ButtonSubmit,
+    InputName,
+    ButtonSearch
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { InputCreateForm, Patient } from "../../types/types";
+import { CreateCompanyAPI, InputCreateForm, Patient } from "../../types/types";
 
 
 export const Form = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, id: string, cpf?: string | undefined}[]>([])
     const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{id: string}[]>([])
     const [examsForm, setExamForm] = useState<{id: string, date: Date | null}[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
-    const [modifyPatient, setModifyPatient] = useState<boolean>(false)
-    const [patientId, setPatientId] = useState<string>("")
-
+    const [idPatient, setIdPatient] = useState<string>("")
+    const [idCompany, setIdCompany] = useState<string>("")
     const [comments, setComments] = useState('');
     const [form, onChange, onItemClick] = useForm(
         {
@@ -49,8 +50,7 @@ export const Form = () => {
             cnpj: "",
             typeExamAso: "",
             functionPatient: ""
-        }
-    )
+        })
   
     useEffect(() => {
         const list = patients.map((patient) => {
@@ -93,14 +93,6 @@ export const Form = () => {
             return 0
         }))
     }, [companies])
-
-    const handleInputChange = (newValue: any, propertyName: string, actionMeta: any) => {
-        if (actionMeta.action === 'input-change') {
-            // Atualiza o estado com o valor inserido pelo usuário
-            onChange({ target: { name: propertyName, value: newValue } } as ChangeEvent<HTMLInputElement>);
-        }
-   
-    }
 
     const handleListOptions = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
@@ -169,46 +161,11 @@ export const Form = () => {
         setComments(newValue);
     }
 
-    const clearPatient = () => {
-        onItemClick([
-            {
-                name: ""
-            },
-            {
-                rg: ""
-            },
-            {
-                cpf: ""
-            }
-        ])
-    }
     const createForm = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const regexRG = /^\d{1,2}(\d{3})?(\d{3})?-?\d{1,2}$/
-        const regexCPF = /^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{11})$/
-
+      
         if(!form.typeExamAso){
             alert("O tipo do aso não foi informado.")
-            return
-        }
-
-        if(!form.name){
-            alert("O nome do paciente é obrigatório.")
-            return
-        }
-
-        if(!form.nameCompany){
-            alert("O nome da empresa é obrigatório.")
-            return
-        }
-
-        if(!regexRG.test(form.rg)){
-            alert("RG inválido verifique e tente novamente.")
-            return
-        }
-        
-        if(form.cpf && !regexCPF.test(form.cpf)){
-            alert("CPF inválido verifique e tente novamente.")
             return
         }
 
@@ -227,17 +184,29 @@ export const Form = () => {
             return
         }
 
-        if(patientId.length === 0){
-
+        if(patients.find((patient) => patient.rg === form.rg && patient.name.toLocaleLowerCase() === form.name.toLocaleLowerCase()) === undefined){
+            
             const input: {name: string, rg: string, cpf?: string} = {
                 name: form.name,
                 rg: form.rg,
-                cpf: form.cpf
+                cpf: form.cpf.length > 0 ? form.cpf : undefined
             }
 
-            createPatient(input)
+            const id = await createPatient(input) as string
 
-            setPatientId("")
+            setIdPatient(id)
+        }
+
+        if(companies.find((company) => company.cnpj === form.cnpj && company.name.toLocaleLowerCase() === form.nameCompany.toLocaleLowerCase()) === undefined){
+            
+            const input: CreateCompanyAPI = {
+                name: form.name,
+                cnpj: form.cnpj
+            }
+
+            const id = await createCompany(input) as string
+
+            setIdCompany(id)
         }
 
     } 
@@ -272,34 +241,16 @@ export const Form = () => {
                 }
             </SectionTypeExamAso>
             <SectionPatient>
-                <LableItem>
-                    Paciente
-                    <Select
-                        options={!loading && !modifyPatient ? listOpionsPatients.map(patient => ({ label: patient.name, value: patient.name })) : []}
-                        value={{ label: form.name, value: form.name }}
-                        isSearchable
-                        onChange={(selectedOption: any) => {
-                            // Atualiza o estado com a opção selecionada
-                            onChange({ target: { name: 'name', value: selectedOption.value } } as ChangeEvent<HTMLInputElement>);
-
-                            const itemSelected = listOpionsPatients.find((item) => item.name === selectedOption.value) as {name: string, id: string, rg: string, cpf: string | undefined}
-                            
-                            onItemClick([
-                                {name: itemSelected.name},
-                                {rg: itemSelected.rg},
-                                {cpf: itemSelected.cpf ? itemSelected.cpf : ""}
-                            ]);
-
-                            setPatientId(itemSelected.id)
-                            
-                        }}
-                        onInputChange={(newValue, actionMeta) => {handleInputChange(newValue, 'name', actionMeta)}}
-                        noOptionsMessage={() => "Nenhum registro encontrado"}
-                        required
-                    /> 
-                    
-                </LableItem>
-                
+                <InputName
+                    placeholder="Paciente"
+                    id="name"
+                    name="name"
+                    value={form.name}
+                    required
+                    autoComplete="off"
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event)}}
+                />
+                <ButtonSearch value={"Buscar"}/>
                 <InputRG placeholder="RG"
                     id="rg"
                     name="rg"
@@ -317,33 +268,20 @@ export const Form = () => {
                 />
             </SectionPatient>
             <SectionCompany>
-            <LableItem>
-                Empresa
-                <Select 
-                    options={!loading ? listOpionsCompanies.map(company => ({ label: company.nameCompany, value: company.nameCompany })) : []}
-                    value={{ label: form.nameCompany, value: form.nameCompany }}
-                    isSearchable
-                    onChange={(selectedOption: any) => {
-                        // Atualiza o estado com a opção selecionada
-                        onChange({ target: { name: 'nameCompany', value: selectedOption.value } } as ChangeEvent<HTMLInputElement>);
-                        const itemSelected = listOpionsCompanies.find((item) => item.nameCompany === selectedOption.value) as {nameCompany: string, cnpj: string}
-
-                        onItemClick([
-                            {nameCompany: itemSelected.nameCompany},
-                            {cnpj: itemSelected.cnpj}
-                        ])
-                    }}
-                    onInputChange={(newValue, actionMeta) => handleInputChange(newValue, 'nameCompany', actionMeta)}
-                    noOptionsMessage={() => "Nenhum registro encontrado"}
+                <InputName placeholder="Empresa"
+                    id="nameCompany"
+                    name="nameCompany"
+                    value={form.nameCompany}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event)}}
                     required
-                /> 
-            </LableItem>
-            
+                    autoComplete="off"
+                />
+                <ButtonSearch value={"Buscar"}/>
                 <InputCNPJ placeholder="CNPJ"
                     id="cnpj"
                     name="cnpj"
                     value={form.cnpj}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); handleListOptions(event)}}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event)}}
                     required
                     autoComplete="off"
                 />

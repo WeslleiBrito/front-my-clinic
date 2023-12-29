@@ -4,7 +4,7 @@ import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../constants/BASE_URL'
 
 export interface UseFetchPostsProps {
-    companies: Company[],
+    companiesAPI: Company[],
     patientsAPI: Patient[],
     exams: Exam[],
     occupationalHazards: OccupationalRisc[],
@@ -18,7 +18,7 @@ export interface UseFetchPostsProps {
 
 
 export const useFachtData = (): UseFetchPostsProps  => {
-    const [companies, setCompanies] = useState<Company[]>([])
+    const [companiesAPI, setCompanies] = useState<Company[]>([])
     const [patientsAPI, setPatientAPI] = useState<Patient[]>([])
     const [exams, setExams] = useState<Exam[]>([])
     const [occupationalHazards, setOccupationalHazards] = useState<OccupationalRisc[]>([])
@@ -69,7 +69,7 @@ export const useFachtData = (): UseFetchPostsProps  => {
     
 
     return {
-        companies,
+        companiesAPI,
         patientsAPI,
         exams,
         occupationalHazards,

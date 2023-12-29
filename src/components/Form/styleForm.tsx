@@ -95,3 +95,5 @@ export const ButtonCancel = styled.input.attrs({type: "button"})`
 `
 export const ButtonSave = styled.button`
 `
+
+export const ButtonSearch = styled.input.attrs({type: "button"})``

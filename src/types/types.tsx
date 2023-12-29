@@ -88,6 +88,7 @@ export interface ContextInterface {
     error: boolean,
     setPatients: Function,
     createPatient: Function,
+    createCompany: Function,
     setLoading: Function
 }
 
@@ -118,4 +119,16 @@ export interface CreatePatientAPI {
     name: string,
     rg: string,
     cpf?: string
+}
+
+export interface CreateCompanyAPI {
+    name: string,
+    cnpj: string
+}
+
+export interface ResponseErrorAxios {
+    code: string, 
+    message: string, 
+    path: Array<string>, 
+    validation: string
 }
