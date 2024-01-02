@@ -97,3 +97,7 @@ export const ButtonSave = styled.button`
 `
 
 export const ButtonSearch = styled.input.attrs({type: "button"})``
+
+export const ListShearch = styled.ul``
+
+export const ItemShearch = styled.li``
