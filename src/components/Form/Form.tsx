@@ -22,7 +22,12 @@ import {
     InputName,
     ButtonSearch,
     ListShearch,
-    ItemShearch
+    ItemShearch,
+    InputSearch,
+    TableSearch,
+    LineItem,
+    ColumnItem,
+    ItemColumn
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import Select from 'react-select'
@@ -31,7 +36,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CreateCompanyAPI, InputCreateForm, Patient } from "../../types/types";
 import { CustomModal } from '../ModalSearch/ModalSearch'
-
+import React, { MouseEventHandler } from 'react'
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
@@ -52,7 +57,9 @@ export const Form: React.FC = () => {
             nameCompany: "",
             cnpj: "",
             typeExamAso: "",
-            functionPatient: ""
+            functionPatient: "",
+            searchPatient: "",
+            searchCompany: ""
         })
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -139,9 +146,29 @@ export const Form: React.FC = () => {
                     id: newElement.id,
                     cpf: newElement.cpf
                 }
+            }).sort((a, b) => {
+
+                if (a.name < b.name) {
+                    return - 1
+                } else if (a.name > b.name) {
+                    return 1
+                }
+    
+                return 0
             })
 
             setListOptionsPatients(newOptions)
+        }else {
+            setListOptionsPatients(patients.sort((a, b) => {
+
+                if (a.name < b.name) {
+                    return - 1
+                } else if (a.name > b.name) {
+                    return 1
+                }
+    
+                return 0
+            }))
         }
     }
 
@@ -284,17 +311,33 @@ export const Form: React.FC = () => {
                 />
                 <ButtonSearch value={"Buscar"} onClick={openPatientsModal} />
                 <CustomModal isOpen={modalPatientsIsOpen} onRequestClose={closePatientsModal}>
+                    <InputSearch placeholder="Digite o nome do paciente..."
+                        value={form.searchPatient}
+                        id="searchPatient"
+                        name="searchPatient"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptions(event)}}
+                    />
                     {
-                        !loading ? <ListShearch>
+                        !loading ? <TableSearch>
+                            <LineItem>
+                                <ColumnItem>Nome</ColumnItem>
+                                <ColumnItem>RG</ColumnItem>
+                                <ColumnItem>CPF</ColumnItem>
+                            </LineItem>
                             {
                                 listOpionsPatients.map((item) => {
-                                    return (
-                                        <ItemShearch>{item.name}</ItemShearch>
+                                    return(
+                                        <LineItem key={item.id} onDoubleClick={() => {console.log("Clicado")}}>
+                                            <ItemColumn>{item.name}</ItemColumn>
+                                            <ItemColumn>{item.rg}</ItemColumn>
+                                            <ItemColumn>{item.cpf ? item.cpf : ""}</ItemColumn>
+                                        </LineItem>
                                     )
                                 })
                             }
-                        </ListShearch> : null
+                        </TableSearch> : null
                     }
+                    
                     <button onClick={closeModal}>Fechar Modal</button>
                 </CustomModal>
                 <InputRG placeholder="RG"
@@ -324,6 +367,12 @@ export const Form: React.FC = () => {
                 />
                 <ButtonSearch value={"Buscar"} onClick={openCompaniesModal} />
                 <CustomModal isOpen={modalCompaniesIsOpen} onRequestClose={closeCompaniesModal}>
+                    <InputSearch placeholder="Digite o nome da empresa..."
+                        value={form.searchCompany}
+                        id="searchCompany"
+                        name="searchCompany"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event)}}
+                    />
                     {
                         !loading ? <ListShearch>
                             {

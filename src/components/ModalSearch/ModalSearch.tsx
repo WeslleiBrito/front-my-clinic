@@ -11,6 +11,7 @@ const ModalContainer = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 100%;
 `;
 
 interface ModalProps {
@@ -29,9 +30,11 @@ export const CustomModal: React.FC<ModalProps> = ({ isOpen, onRequestClose, chil
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
         },
         content: {
-          width: '300px',
+          width: '80vw',
+          height: '70vh',
           margin: 'auto',
-        },
+          overflow: "inherit"
+        }
       }}
     >
       <ModalContainer>{children}</ModalContainer>

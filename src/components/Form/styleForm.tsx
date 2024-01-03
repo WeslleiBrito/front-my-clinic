@@ -95,9 +95,42 @@ export const ButtonCancel = styled.input.attrs({type: "button"})`
 `
 export const ButtonSave = styled.button`
 `
-
 export const ButtonSearch = styled.input.attrs({type: "button"})``
 
 export const ListShearch = styled.ul``
 
 export const ItemShearch = styled.li``
+
+export const TableSearch = styled.table`
+  display: flex;
+  flex-direction: column;
+  height: 40vh;
+  max-height: 40vh;
+  overflow-y: scroll;
+`
+
+export const LineItem = styled.tr`
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  :hover {
+    background-color: #98FB98;
+    cursor: default;
+  }
+`
+
+export const ColumnItem = styled.th`
+  display: flex;
+  justify-content: center;
+  width: 17vw;
+  background-color: aqua;
+ 
+`
+
+export const InputSearch = styled.input.attrs({type: "text"})``
+
+export const ItemColumn = styled.td`
+  display: flex;
+  width: 17vw;
+  
+`
