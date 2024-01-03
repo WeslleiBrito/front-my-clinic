@@ -34,7 +34,7 @@ import Select from 'react-select'
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { CreateCompanyAPI, InputCreateForm, Patient } from "../../types/types";
+import { Company, CreateCompanyAPI, InputCreateForm, Patient } from "../../types/types";
 import { CustomModal } from '../ModalSearch/ModalSearch'
 import React, { MouseEventHandler } from 'react'
 export const Form: React.FC = () => {
@@ -42,7 +42,7 @@ export const Form: React.FC = () => {
 
     const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, id: string, cpf?: string | undefined }[]>([])
-    const [listOpionsCompanies, setListOptionsCompanies] = useState<{ nameCompany: string, cnpj: string }[]>([])
+    const [listOpionsCompanies, setListOptionsCompanies] = useState<Company[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
@@ -67,8 +67,6 @@ export const Form: React.FC = () => {
     const [modalCompaniesIsOpen, setModalCompaniesIsOpen] = useState(false);
 
     const openModal = () => {
-        console.log("fui chamadado");
-
         setModalIsOpen(true);
     };
 
@@ -88,9 +86,10 @@ export const Form: React.FC = () => {
         setModalCompaniesIsOpen(true);
     };
 
-    const closeCompaniesModal = () => {
+    const closeCompaniesModal = () => {   
         setModalCompaniesIsOpen(false);
     };
+
     useEffect(() => {
         const list = patients.map((patient) => {
             return {
@@ -114,18 +113,22 @@ export const Form: React.FC = () => {
     }, [patients])
 
     useEffect(() => {
-        const list = companies.map((company) => {
+        const list: Company[] = companies.map((company) => {
             return {
-                nameCompany: company.name,
-                cnpj: company.cnpj
+                name: company.name,
+                cnpj: company.cnpj,
+                id: company.id,
+                createdAt: company.createdAt,
+                updatedAt: company.updatedAt
+
             }
         })
 
         setListOptionsCompanies([...list].sort((a, b) => {
 
-            if (a.nameCompany < b.nameCompany) {
+            if (a.name < b.name) {
                 return - 1
-            } else if (a.nameCompany > b.nameCompany) {
+            } else if (a.name > b.name) {
                 return 1
             }
 
@@ -133,10 +136,11 @@ export const Form: React.FC = () => {
         }))
     }, [companies])
 
-    const handleListOptions = (event: ChangeEvent<HTMLInputElement>): void => {
+    useEffect(() => console.log(modalCompaniesIsOpen), [modalCompaniesIsOpen])
+    const handleListOptionsPatient = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
 
-        if (patients && name.length > 0) {
+        if (name.length > 0) {
             const newOptions: { name: string, rg: string, id: string, cpf?: string | undefined }[] = patients.filter((patient) => {
                 return patient.name.toLowerCase().includes(name.toLowerCase())
             }).map((newElement) => {
@@ -160,6 +164,46 @@ export const Form: React.FC = () => {
             setListOptionsPatients(newOptions)
         }else {
             setListOptionsPatients(patients.sort((a, b) => {
+
+                if (a.name < b.name) {
+                    return - 1
+                } else if (a.name > b.name) {
+                    return 1
+                }
+    
+                return 0
+            }))
+        }
+    }
+
+    const handleListOptionsCompanay = (event: ChangeEvent<HTMLInputElement>): void => {
+        const name = event.target.value
+     
+        if (name.length > 0) {
+            const newOptions: Company[] = companies.filter((company) => {
+                return company.name.toLowerCase().includes(name.toLowerCase())
+            }).map((newElement) => {
+                return {
+                    name: newElement.name,
+                    cnpj: newElement.cnpj,
+                    id: newElement.id,
+                    createdAt: newElement.createdAt,
+                    updatedAt: newElement.updatedAt
+                }
+            }).sort((a, b) => {
+
+                if (a.name < b.name) {
+                    return - 1
+                } else if (a.name > b.name) {
+                    return 1
+                }
+    
+                return 0
+            })
+
+            setListOptionsCompanies(newOptions)
+        }else {
+            setListOptionsCompanies(companies.sort((a, b) => {
 
                 if (a.name < b.name) {
                     return - 1
@@ -315,7 +359,7 @@ export const Form: React.FC = () => {
                         value={form.searchPatient}
                         id="searchPatient"
                         name="searchPatient"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptions(event)}}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptionsPatient(event)}}
                     />
                     {
                         !loading ? <TableSearch>
@@ -344,7 +388,7 @@ export const Form: React.FC = () => {
                     id="rg"
                     name="rg"
                     value={form.rg}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptions(event) }}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event)}}
                     required
                     autoComplete="off"
                 />
@@ -352,7 +396,7 @@ export const Form: React.FC = () => {
                     id="cpf"
                     name="cpf"
                     value={form.cpf}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptions(event) }}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event)}}
                     autoComplete="off"
                 />
             </SectionPatient>
@@ -371,18 +415,33 @@ export const Form: React.FC = () => {
                         value={form.searchCompany}
                         id="searchCompany"
                         name="searchCompany"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event)}}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptionsCompanay(event)}}
                     />
                     {
-                        !loading ? <ListShearch>
+                        !loading ? <TableSearch>
+                            <LineItem>
+                                <ColumnItem>Nome</ColumnItem>
+                                <ColumnItem>CNPJ</ColumnItem>
+                            </LineItem>
                             {
                                 listOpionsCompanies.map((item) => {
-                                    return (
-                                        <ItemShearch>{item.nameCompany}</ItemShearch>
+                                    const dataCompany: {[key: string] : string}[]= [
+                                        {
+                                            nameCompany: item.name
+                                        },
+                                        {
+                                            cnpj: item.cnpj
+                                        }
+                                    ]
+                                    return(
+                                        <LineItem key={item.id} onDoubleClick={() => {onItemClick(dataCompany); setIdCompany(item.id); setModalCompaniesIsOpen(false)}}>
+                                            <ItemColumn>{item.name}</ItemColumn>
+                                            <ItemColumn>{item.cnpj}</ItemColumn>
+                                        </LineItem>
                                     )
                                 })
                             }
-                        </ListShearch> : null
+                        </TableSearch> : null
                     }
                 </CustomModal>
                 <InputCNPJ placeholder="CNPJ"
