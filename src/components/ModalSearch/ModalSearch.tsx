@@ -30,7 +30,7 @@ export const CustomModal: React.FC<ModalProps> = ({ isOpen, onRequestClose, chil
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
         },
         content: {
-          width: '80vw',
+          width: '45vw',
           height: '70vh',
           margin: 'auto',
           overflow: "inherit"

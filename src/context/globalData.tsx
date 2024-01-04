@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import { DataContext } from './dataContext'
 import { useFachtData } from '../hooks/useFechtDataHook'
-import { Company, CreateCompanyAPI, CreatePatientAPI, Patient, ResponseErrorAxios } from '../types/types'
+import { Company, CreateCompanyAPI, CreatePatientAPI, Form, InputCreateForm, Patient, ResponseErrorAxios } from '../types/types'
 import axios, { AxiosError }  from 'axios';
 import { BASE_URL } from '../../src/constants/BASE_URL'
 
@@ -12,12 +12,14 @@ interface DataContextProps {
 
 export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
 
-    const {companiesAPI, exams, forms, occupationalHazards, patientsAPI, error, loading, typeExamAso, setLoading} = useFachtData()
+    const {companiesAPI, exams, formsAPI, occupationalHazards, patientsAPI, error, loading, typeExamAso, setLoading} = useFachtData()
     const [patients, setPatients] = useState<Patient[]>([])
     const [companies, setCompany] = useState<Company[]>([])
-    
+    const [forms, setForms] = useState<Form[]>([])
+
     useEffect(() => setPatients([...patientsAPI]), [patientsAPI])
     useEffect(() => setCompany([...companiesAPI]), [companiesAPI])
+    useEffect(() => setForms([...formsAPI]), [formsAPI])
 
     const createPatient = async (input: CreatePatientAPI): Promise<string | undefined> => {
         try {
@@ -78,6 +80,26 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
             }
         }
     }
+
+    const createForm = async (input: InputCreateForm): Promise<void> => {
+        try {
+            await axios.post(BASE_URL + '/form', input)
+        } catch (error) {
+            if(error instanceof AxiosError){
+                if(typeof(error.response?.data) === "string"){
+                    alert(error.response?.data)
+                }else{
+                    const newError = (error.response?.data as Array<ResponseErrorAxios>)
+
+                    for(const erro of newError){
+                        
+                        alert(erro.message)
+                    }
+                }
+            }
+        }
+    }
+
     const context = {
         companies,
         exams,
@@ -90,6 +112,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         setPatients,
         createPatient,
         createCompany,
+        createForm,
         setLoading
     }
 

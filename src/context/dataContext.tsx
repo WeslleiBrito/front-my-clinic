@@ -13,8 +13,8 @@ const defaultContextValue = {
     setPatients: () => {},
     createPatient: (): string | undefined => { return },
     createCompany: (): string | undefined => { return },
-    setLoading: () => {}
-
+    setLoading: () => {},
+    createForm: () => {}
   };
 
 

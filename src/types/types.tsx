@@ -89,7 +89,8 @@ export interface ContextInterface {
     setPatients: Function,
     createPatient: Function,
     createCompany: Function,
-    setLoading: Function
+    setLoading: Function,
+    createForm: Function
 }
 
 export interface TypeExamAso {
@@ -107,7 +108,7 @@ export interface InputCreateForm {
     status: boolean,
     idExams: {
         id: string,
-        date: Date
+        date: string
     }[],
     idOccupationalHazards: {
         id: string

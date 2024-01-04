@@ -97,9 +97,56 @@ export const ButtonSave = styled.button`
 `
 export const ButtonSearch = styled.input.attrs({type: "button"})``
 
-export const ListShearch = styled.ul``
+export const ListShearch = styled.ul`
+  display: flex;
+  flex-direction: column;
+  height: 40vh;
+  max-height: 40vh;
+  overflow-y: scroll;
+`
 
-export const ItemShearch = styled.li``
+export const ItemShearch = styled.li`
+  display: flex;
+  width: 100;
+  :hover {
+    background-color: #98FB98;
+    cursor: default;
+  }
+`
+export const ItemShearchHeader = styled.li`
+  display: flex;
+`
+export const HeaderName = styled.div`
+  text-align: center;
+  width: 25vw;
+`
+
+export const HeaderRG = styled.div`
+text-align: center;
+  width: 8vw;
+`
+
+export const HeaderCPF = styled.div`
+  text-align: center;
+  width: 10vw;
+`
+
+export const ItemName = styled.div`
+  width: 25vw;
+  user-select: none;
+`
+
+export const ItemRG = styled.div`
+  width: 8vw;
+  text-align: center;
+  user-select: none;
+`
+
+export const ItemCPF = styled.div`
+  text-align: center;
+  width: 10vw;
+  user-select: none;
+`
 
 export const TableSearch = styled.table`
   display: flex;

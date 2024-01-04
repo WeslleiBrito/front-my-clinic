@@ -24,23 +24,28 @@ import {
     ListShearch,
     ItemShearch,
     InputSearch,
-    TableSearch,
-    LineItem,
-    ColumnItem,
-    ItemColumn
+    HeaderName,
+    HeaderRG,
+    HeaderCPF,
+    ItemShearchHeader,
+    ItemName,
+    ItemRG,
+    ItemCPF
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
-import Select from 'react-select'
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Company, CreateCompanyAPI, InputCreateForm, Patient } from "../../types/types";
+import { Company, CreateCompanyAPI, InputCreateForm} from "../../types/types";
 import { CustomModal } from '../ModalSearch/ModalSearch'
-import React, { MouseEventHandler } from 'react'
+import React from 'react'
+
+
+
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm } = context
     const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, id: string, cpf?: string | undefined }[]>([])
     const [listOpionsCompanies, setListOptionsCompanies] = useState<Company[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
@@ -62,17 +67,8 @@ export const Form: React.FC = () => {
             searchCompany: ""
         })
 
-    const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalPatientsIsOpen, setModalPatientsIsOpen] = useState(false);
     const [modalCompaniesIsOpen, setModalCompaniesIsOpen] = useState(false);
-
-    const openModal = () => {
-        setModalIsOpen(true);
-    };
-
-    const closeModal = () => {
-        setModalIsOpen(false);
-    };
 
     const openPatientsModal = () => {
         setModalPatientsIsOpen(true);
@@ -136,7 +132,7 @@ export const Form: React.FC = () => {
         }))
     }, [companies])
 
-    useEffect(() => console.log(modalCompaniesIsOpen), [modalCompaniesIsOpen])
+
     const handleListOptionsPatient = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
 
@@ -264,7 +260,7 @@ export const Form: React.FC = () => {
         setComments(newValue);
     }
 
-    const createForm = async (event: FormEvent<HTMLFormElement>) => {
+    const sendForm = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         if (!form.typeExamAso) {
@@ -287,7 +283,7 @@ export const Form: React.FC = () => {
             return
         }
 
-        if (patients.find((patient) => patient.rg === form.rg && patient.name.toLocaleLowerCase() === form.name.toLocaleLowerCase()) === undefined) {
+        if (patients.find((patient) => patient.rg === form.rg && patient.name.toLocaleLowerCase() === form.name.toLocaleLowerCase()) === undefined && idPatient.length === 0) {
 
             const input: { name: string, rg: string, cpf?: string } = {
                 name: form.name,
@@ -300,7 +296,7 @@ export const Form: React.FC = () => {
             setIdPatient(id)
         }
 
-        if (companies.find((company) => company.cnpj === form.cnpj && company.name.toLocaleLowerCase() === form.nameCompany.toLocaleLowerCase()) === undefined) {
+        if (companies.find((company) => company.cnpj === form.cnpj && company.name.toLocaleLowerCase() === form.nameCompany.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
 
             const input: CreateCompanyAPI = {
                 name: form.name,
@@ -312,10 +308,42 @@ export const Form: React.FC = () => {
             setIdCompany(id)
         }
 
+
+        const dataForm: InputCreateForm = {
+            functionPatient: form.functionPatient,
+            idCompany: idCompany,
+            idExams: examsForm.map((exam) => {
+                const dateFormarted = format(exam.date ? exam.date : new Date(), "yyyy-MM-dd")
+                return{
+                    id: exam.id,
+                    date: dateFormarted
+                }
+            }),
+            idOccupationalHazards: occupationaisRisckForm,
+            idPatient: idPatient,
+            idTypeExamAso: form.typeExamAso,
+            status: statusPatient,
+            comments
+        }
+
+        console.log(dataForm);
+        
+        createForm(dataForm)
+    }
+
+    const fillForm = (datas: {[key: string]: string}[], id: string, form: 'company' | 'patient'): void => {
+        onItemClick(datas)
+        if(form === 'company'){
+            closeCompaniesModal()
+            setIdCompany(id)
+        }else{
+            closePatientsModal()
+            setIdPatient(id)
+        }
     }
 
     return (
-        <FormPatient onSubmit={createForm}>
+        <FormPatient onSubmit={sendForm}>
 
             <SectionTypeExamAso>
                 {
@@ -351,7 +379,7 @@ export const Form: React.FC = () => {
                     value={form.name}
                     required
                     autoComplete="off"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event) }}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); setIdPatient("") }}
                 />
                 <ButtonSearch value={"Buscar"} onClick={openPatientsModal} />
                 <CustomModal isOpen={modalPatientsIsOpen} onRequestClose={closePatientsModal}>
@@ -362,33 +390,43 @@ export const Form: React.FC = () => {
                         onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptionsPatient(event)}}
                     />
                     {
-                        !loading ? <TableSearch>
-                            <LineItem>
-                                <ColumnItem>Nome</ColumnItem>
-                                <ColumnItem>RG</ColumnItem>
-                                <ColumnItem>CPF</ColumnItem>
-                            </LineItem>
+                        !loading ? <ListShearch>
+                            <ItemShearchHeader>
+                                <HeaderName>Nome</HeaderName>
+                                <HeaderRG>RG</HeaderRG>
+                                <HeaderCPF>CPF</HeaderCPF>
+                            </ItemShearchHeader>
                             {
-                                listOpionsPatients.map((item) => {
+                                listOpionsPatients.map((patient) => {
+                                    const dataPatient: {[key: string] : string}[]= [
+                                        {
+                                            name: patient.name
+                                        },
+                                        {
+                                            rg: patient.rg
+                                        },
+                                        {
+                                            cpf: patient.cpf ? patient.cpf : ""
+                                        }
+                                    ]
+
                                     return(
-                                        <LineItem key={item.id} onDoubleClick={() => {console.log("Clicado")}}>
-                                            <ItemColumn>{item.name}</ItemColumn>
-                                            <ItemColumn>{item.rg}</ItemColumn>
-                                            <ItemColumn>{item.cpf ? item.cpf : ""}</ItemColumn>
-                                        </LineItem>
+                                        <ItemShearch key={patient.id} onDoubleClick={() => {fillForm(dataPatient, patient.id, 'patient')}}>
+                                            <ItemName>{patient.name}</ItemName>
+                                            <ItemRG>{patient.rg}</ItemRG>
+                                            <ItemCPF>{patient.cpf ? patient.cpf : ""}</ItemCPF>
+                                        </ItemShearch>
                                     )
                                 })
                             }
-                        </TableSearch> : null
+                        </ListShearch> : null
                     }
-                    
-                    <button onClick={closeModal}>Fechar Modal</button>
                 </CustomModal>
                 <InputRG placeholder="RG"
                     id="rg"
                     name="rg"
                     value={form.rg}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event)}}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); setIdCompany("")}}
                     required
                     autoComplete="off"
                 />
@@ -418,11 +456,11 @@ export const Form: React.FC = () => {
                         onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptionsCompanay(event)}}
                     />
                     {
-                        !loading ? <TableSearch>
-                            <LineItem>
-                                <ColumnItem>Nome</ColumnItem>
-                                <ColumnItem>CNPJ</ColumnItem>
-                            </LineItem>
+                        !loading ? <ListShearch>
+                            <ItemShearchHeader>
+                                <HeaderName>Nome</HeaderName>
+                                <HeaderCPF>CNPJ</HeaderCPF>
+                            </ItemShearchHeader>
                             {
                                 listOpionsCompanies.map((item) => {
                                     const dataCompany: {[key: string] : string}[]= [
@@ -434,14 +472,14 @@ export const Form: React.FC = () => {
                                         }
                                     ]
                                     return(
-                                        <LineItem key={item.id} onDoubleClick={() => {onItemClick(dataCompany); setIdCompany(item.id); setModalCompaniesIsOpen(false)}}>
-                                            <ItemColumn>{item.name}</ItemColumn>
-                                            <ItemColumn>{item.cnpj}</ItemColumn>
-                                        </LineItem>
+                                        <ItemShearch key={item.id} onDoubleClick={() => {fillForm(dataCompany, item.id, 'company')}}>
+                                            <ItemName>{item.name}</ItemName>
+                                            <ItemCPF>{item.cnpj}</ItemCPF>
+                                        </ItemShearch>
                                     )
                                 })
                             }
-                        </TableSearch> : null
+                        </ListShearch> : null
                     }
                 </CustomModal>
                 <InputCNPJ placeholder="CNPJ"
