@@ -81,22 +81,20 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
-    const createForm = async (input: InputCreateForm): Promise<void> => {
+    const createForm = async (input: InputCreateForm): Promise<boolean | undefined> => {
         try {
             await axios.post(BASE_URL + '/form', input)
+            return true
         } catch (error) {
+        
             if(error instanceof AxiosError){
-                if(typeof(error.response?.data) === "string"){
-                    alert(error.response?.data)
-                }else{
-                    const newError = (error.response?.data as Array<ResponseErrorAxios>)
-
-                    for(const erro of newError){
-                        
-                        alert(erro.message)
-                    }
+                if(error.code === "ERR_NETWORK"){
+                    alert('Servidor fora do ar, entre em contato com o desenvolvedor do sistema.')
                 }
+               
             }
+
+            return
         }
     }
 

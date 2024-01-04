@@ -291,9 +291,14 @@ export const Form: React.FC = () => {
                 cpf: form.cpf.length > 0 ? form.cpf : undefined
             }
 
-            const id = await createPatient(input) as string
+            const id = await createPatient(input) 
 
-            setIdPatient(id)
+            if(typeof(id) === "undefined"){
+                return
+            }else{
+                setIdPatient(id)
+            }
+            
         }
 
         if (companies.find((company) => company.cnpj === form.cnpj && company.name.toLocaleLowerCase() === form.nameCompany.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
@@ -303,9 +308,16 @@ export const Form: React.FC = () => {
                 cnpj: form.cnpj
             }
 
-            const id = await createCompany(input) as string
+            
+            const id = await createCompany(input)
 
-            setIdCompany(id)
+            if(typeof(id) === "undefined"){
+                return
+            }else{
+
+                setIdCompany(id)
+            }
+
         }
 
 
@@ -325,10 +337,15 @@ export const Form: React.FC = () => {
             status: statusPatient,
             comments
         }
-
-        console.log(dataForm);
         
-        createForm(dataForm)
+        const result = await createForm(dataForm)
+
+        if(result){
+            alert('Formuláro criado com sucesso!')
+        }else{
+            
+            return
+        }
     }
 
     const fillForm = (datas: {[key: string]: string}[], id: string, form: 'company' | 'patient'): void => {

@@ -14,7 +14,7 @@ const defaultContextValue = {
     createPatient: (): string | undefined => { return },
     createCompany: (): string | undefined => { return },
     setLoading: () => {},
-    createForm: () => {}
+    createForm: async (): Promise<boolean | undefined> => {return}
   };
 
 

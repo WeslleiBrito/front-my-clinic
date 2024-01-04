@@ -90,7 +90,7 @@ export interface ContextInterface {
     createPatient: Function,
     createCompany: Function,
     setLoading: Function,
-    createForm: Function
+    createForm: (input: InputCreateForm) => Promise<boolean | undefined>
 }
 
 export interface TypeExamAso {
