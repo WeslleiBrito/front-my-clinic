@@ -84,6 +84,8 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const createForm = async (input: InputCreateForm): Promise<boolean | undefined> => {
         try {
             await axios.post(BASE_URL + '/form', input)
+            const newForms: Form[] = await axios.get(BASE_URL + '/form')
+            setForms(newForms)
             return true
         } catch (error) {
         
