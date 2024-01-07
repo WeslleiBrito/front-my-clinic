@@ -17,7 +17,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const [companies, setCompany] = useState<Company[]>([])
     const [forms, setForms] = useState<Form[]>([])
     const [formPatient, setFormPatient] = useState<FormPatient>({name: "", rg: "", cpf: ""})
-
+    const [idPatient, setIdPatient] = useState<string>("")
     const [dataForm, setDataForm] = useState<InputCreateForm>(
         {
             functionPatient: "",
@@ -70,6 +70,18 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         const {name, value} = event.target
         setFormPatient((prevForm) => ({ ...prevForm, [name]: value }))
         handleIdPatient("")
+    }
+
+    const fillFormPatient = (id: string): void => {
+        const patientSelected = patients.find((patient) => patient.id === id) as Patient
+        const data = {
+            name: patientSelected.name,
+            rg: patientSelected.rg,
+            cpf: patientSelected.cpf
+        }
+        
+        setFormPatient(data)
+        setIdPatient(id)
     }
 
     const createPatient = async (input: CreatePatientAPI): Promise<string | undefined> => {
@@ -158,6 +170,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         typeExamAso,
         occupationalHazards,
         patients,
+        idPatient,
         error,
         loading,
         setPatients,
@@ -174,7 +187,8 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         handleIdTypeExam,
         handleStatus,
         formPatient,
-        handleFormPatient
+        handleFormPatient,
+        fillFormPatient
     }
 
     return <DataContext.Provider value={context}>{props.children}</DataContext.Provider>

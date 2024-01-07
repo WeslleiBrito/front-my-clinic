@@ -80,6 +80,7 @@ export interface TypeExamAso {
 export interface ContextInterface {
     companies: Company[],
     patients: Patient[],
+    idPatient: string,
     exams: Exam[],
     occupationalHazards: OccupationalRisc[],
     forms: Form[],
@@ -100,7 +101,8 @@ export interface ContextInterface {
     handleIdTypeExam: Function,
     handleStatus: Function,
     formPatient: FormPatient,
-    handleFormPatient: Function
+    handleFormPatient: Function,
+    fillFormPatient: (id: string) => void
 }
 
 export interface TypeExamAso {

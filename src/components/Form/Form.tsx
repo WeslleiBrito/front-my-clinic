@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { useContext, useState, ChangeEvent, FormEvent } from "react";
 import { DataContext } from '../../context/dataContext';
 import {
     FormPatient,
@@ -41,7 +41,6 @@ export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
     const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm } = context
-    const [listOpionsPatients, setListOptionsPatients] = useState<{ name: string, rg: string, id: string, cpf?: string | undefined }[]>([])
     const [listOpionsCompanies, setListOptionsCompanies] = useState<Company[]>([])
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
@@ -62,13 +61,8 @@ export const Form: React.FC = () => {
             searchCompany: ""
         })
 
-    const [modalPatientsIsOpen, setModalPatientsIsOpen] = useState(false);
     const [modalCompaniesIsOpen, setModalCompaniesIsOpen] = useState(false);
 
-
-    const closePatientsModal = () => {
-        setModalPatientsIsOpen(false);
-    };
 
     const openCompaniesModal = () => {
         setModalCompaniesIsOpen(true);
@@ -78,51 +72,6 @@ export const Form: React.FC = () => {
         setModalCompaniesIsOpen(false);
     };
 
-    useEffect(() => {
-        const list = patients.map((patient) => {
-            return {
-                name: patient.name,
-                rg: patient.rg,
-                id: patient.id,
-                cpf: patient.cpf
-            }
-        })
-
-        setListOptionsPatients([...list].sort((a, b) => {
-
-            if (a.name < b.name) {
-                return - 1
-            } else if (a.name > b.name) {
-                return 1
-            }
-
-            return 0
-        }))
-    }, [patients])
-
-    useEffect(() => {
-        const list: Company[] = companies.map((company) => {
-            return {
-                name: company.name,
-                cnpj: company.cnpj,
-                id: company.id,
-                createdAt: company.createdAt,
-                updatedAt: company.updatedAt
-
-            }
-        })
-
-        setListOptionsCompanies([...list].sort((a, b) => {
-
-            if (a.name < b.name) {
-                return - 1
-            } else if (a.name > b.name) {
-                return 1
-            }
-
-            return 0
-        }))
-    }, [companies])
 
     const handleListOptionsCompanay = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
@@ -306,7 +255,6 @@ export const Form: React.FC = () => {
             closeCompaniesModal()
             setIdCompany(id)
         }else{
-            closePatientsModal()
             setIdPatient(id)
         }
     }
@@ -340,7 +288,6 @@ export const Form: React.FC = () => {
                     }) : null
                 }
             </SectionTypeExamAso>
-           
             <Patient/>
             <SectionCompany>
                 <InputName placeholder="Empresa"

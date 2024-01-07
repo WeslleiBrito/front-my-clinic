@@ -44,10 +44,16 @@ export const ItemSearch = styled.li`
 
 export const NameItem = styled.p`
     width: 20vw;
+    user-select: none;
 `
 
 export const RgItem = styled.p`
     width: 8vw;
+    user-select: none;
 `
 
-export const CPFItem = styled.p``
+export const CPFItem = styled.p`
+    user-select: none;
+`
+
+export const InputSearch = styled.input.attrs({type: "text"})``

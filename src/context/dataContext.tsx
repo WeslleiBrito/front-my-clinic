@@ -4,6 +4,7 @@ import { ContextInterface } from "../types/types";
 const defaultContextValue: ContextInterface = {
     companies: [],
     patients: [],
+    idPatient: "",
     exams: [],
     occupationalHazards: [],
     forms: [],
@@ -28,7 +29,8 @@ const defaultContextValue: ContextInterface = {
       rg: "",
       cpf: ""
     },
-    handleFormPatient: () => {}
+    handleFormPatient: () => {},
+    fillFormPatient: () => {}
   };
 
 
