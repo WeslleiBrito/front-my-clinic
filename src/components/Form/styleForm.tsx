@@ -12,14 +12,6 @@ export const InputName = styled.input.attrs({ type: "text" })`
     width: 70%;
     height: 4vh;
 `
-export const InputRG = styled.input.attrs({type: "text"})`
-    width: 35%;
-    height: 4vh;
-`
-export const InputCPF = styled.input.attrs({type: "text"})`
-    width: 35%;
-    height: 4vh;
-`
 export const InputCNPJ = styled.input.attrs({type: "text"})`
     width: 35%;
     height: 4vh;
@@ -40,8 +32,6 @@ export const SuggestionItem = styled.li`
   &:hover {
     background-color: #eeeeee;
   }
-`
-export const SectionPatient = styled.section`
 `
 export const SectionCompany = styled.section`
 `
@@ -121,11 +111,6 @@ export const HeaderName = styled.div`
   width: 25vw;
 `
 
-export const HeaderRG = styled.div`
-text-align: center;
-  width: 8vw;
-`
-
 export const HeaderCPF = styled.div`
   text-align: center;
   width: 10vw;
@@ -133,12 +118,6 @@ export const HeaderCPF = styled.div`
 
 export const ItemName = styled.div`
   width: 25vw;
-  user-select: none;
-`
-
-export const ItemRG = styled.div`
-  width: 8vw;
-  text-align: center;
   user-select: none;
 `
 

@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react'
 import { DataContext } from './dataContext'
 import { useFachtData } from '../hooks/useFechtDataHook'
-import { Company, CreateCompanyAPI, CreatePatientAPI, Form, InputCreateForm, Patient, ResponseErrorAxios } from '../types/types'
+import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputCreateForm, Patient, ResponseErrorAxios } from '../types/types'
 import axios, { AxiosError }  from 'axios';
 import { BASE_URL } from '../../src/constants/BASE_URL'
 
@@ -16,10 +16,61 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const [patients, setPatients] = useState<Patient[]>([])
     const [companies, setCompany] = useState<Company[]>([])
     const [forms, setForms] = useState<Form[]>([])
+    const [formPatient, setFormPatient] = useState<FormPatient>({name: "", rg: "", cpf: ""})
+
+    const [dataForm, setDataForm] = useState<InputCreateForm>(
+        {
+            functionPatient: "",
+            idCompany: "",
+            idExams: [],
+            idOccupationalHazards: [],
+            idPatient: "",
+            idTypeExamAso: "",
+            status: null
+        }
+    )
 
     useEffect(() => setPatients([...patientsAPI]), [patientsAPI])
     useEffect(() => setCompany([...companiesAPI]), [companiesAPI])
     useEffect(() => setForms([...formsAPI]), [formsAPI])
+    
+    const handleFunctionPatient = (newIdPatient: string): void => {
+        setDataForm({...dataForm, functionPatient: newIdPatient})
+    }
+
+    const handleIdCompany = (newIdCompany: string): void => {
+        setDataForm({...dataForm, idCompany: newIdCompany})
+    }
+    
+    const includeIdExam = (newIdExam: {id: string, date: string}): void => {
+        setDataForm({...dataForm, idExams: [...dataForm.idExams, newIdExam]})
+    }
+
+    const removeIdExam = (idRemove: string): void => {
+        setDataForm({...dataForm, idExams: [...dataForm.idExams].filter((exam) => {return exam.id !== idRemove})})
+    }
+
+    const handleIdOccupationalHazards = (newIdOccupational: {id: string}): void => {
+        setDataForm({...dataForm, idOccupationalHazards: [...dataForm.idOccupationalHazards, newIdOccupational]})
+    }
+
+    const handleIdPatient = (newIdPatient: string): void => {
+        setDataForm({...dataForm, idPatient: newIdPatient})
+    }
+
+    const handleIdTypeExam = (newIdTypeExamAso: string): void => {
+        setDataForm({...dataForm, idTypeExamAso: newIdTypeExamAso})
+    }
+
+    const handleStatus = (newStatus: true | false): void => {
+        setDataForm({...dataForm, status: newStatus})
+    }
+
+    const handleFormPatient = (event: ChangeEvent<HTMLInputElement>): void => {
+        const {name, value} = event.target
+        setFormPatient((prevForm) => ({ ...prevForm, [name]: value }))
+        handleIdPatient("")
+    }
 
     const createPatient = async (input: CreatePatientAPI): Promise<string | undefined> => {
         try {
@@ -100,7 +151,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
-    const context = {
+    const context: ContextInterface = {
         companies,
         exams,
         forms,
@@ -113,7 +164,17 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         createPatient,
         createCompany,
         createForm,
-        setLoading
+        setLoading,
+        handleFunctionPatient,
+        handleIdCompany,
+        includeIdExam,
+        removeIdExam,
+        handleIdOccupationalHazards,
+        handleIdPatient,
+        handleIdTypeExam,
+        handleStatus,
+        formPatient,
+        handleFormPatient
     }
 
     return <DataContext.Provider value={context}>{props.children}</DataContext.Provider>

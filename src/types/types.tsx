@@ -90,7 +90,17 @@ export interface ContextInterface {
     createPatient: Function,
     createCompany: Function,
     setLoading: Function,
-    createForm: (input: InputCreateForm) => Promise<boolean | undefined>
+    createForm: (input: InputCreateForm) => Promise<boolean | undefined>,
+    handleFunctionPatient: Function,
+    handleIdCompany: Function,
+    includeIdExam: Function,
+    removeIdExam: Function,
+    handleIdOccupationalHazards: Function,
+    handleIdPatient: (newIdPatient: string) => void,
+    handleIdTypeExam: Function,
+    handleStatus: Function,
+    formPatient: FormPatient,
+    handleFormPatient: Function
 }
 
 export interface TypeExamAso {
@@ -105,7 +115,7 @@ export interface InputCreateForm {
     idPatient: string,
     idTypeExamAso: string,
     functionPatient: string,
-    status: boolean,
+    status: boolean | null,
     idExams: {
         id: string,
         date: string
@@ -132,4 +142,10 @@ export interface ResponseErrorAxios {
     message: string, 
     path: Array<string>, 
     validation: string
+}
+
+export interface FormPatient { 
+    name: string,
+    rg: string,
+    cpf?: string
 }

@@ -2,9 +2,6 @@ import { useContext, useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { DataContext } from '../../context/dataContext';
 import {
     FormPatient,
-    InputRG,
-    InputCPF,
-    SectionPatient,
     SectionCompany,
     InputCNPJ,
     SectionTypeExamAso,
@@ -25,11 +22,9 @@ import {
     ItemShearch,
     InputSearch,
     HeaderName,
-    HeaderRG,
     HeaderCPF,
     ItemShearchHeader,
     ItemName,
-    ItemRG,
     ItemCPF
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
@@ -39,7 +34,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Company, CreateCompanyAPI, InputCreateForm} from "../../types/types";
 import { CustomModal } from '../ModalSearch/ModalSearch'
 import React from 'react'
-
+import {Patient} from '../Patient/Patient'
 
 
 export const Form: React.FC = () => {
@@ -70,9 +65,6 @@ export const Form: React.FC = () => {
     const [modalPatientsIsOpen, setModalPatientsIsOpen] = useState(false);
     const [modalCompaniesIsOpen, setModalCompaniesIsOpen] = useState(false);
 
-    const openPatientsModal = () => {
-        setModalPatientsIsOpen(true);
-    };
 
     const closePatientsModal = () => {
         setModalPatientsIsOpen(false);
@@ -131,46 +123,6 @@ export const Form: React.FC = () => {
             return 0
         }))
     }, [companies])
-
-
-    const handleListOptionsPatient = (event: ChangeEvent<HTMLInputElement>): void => {
-        const name = event.target.value
-
-        if (name.length > 0) {
-            const newOptions: { name: string, rg: string, id: string, cpf?: string | undefined }[] = patients.filter((patient) => {
-                return patient.name.toLowerCase().includes(name.toLowerCase())
-            }).map((newElement) => {
-                return {
-                    name: newElement.name,
-                    rg: newElement.rg,
-                    id: newElement.id,
-                    cpf: newElement.cpf
-                }
-            }).sort((a, b) => {
-
-                if (a.name < b.name) {
-                    return - 1
-                } else if (a.name > b.name) {
-                    return 1
-                }
-    
-                return 0
-            })
-
-            setListOptionsPatients(newOptions)
-        }else {
-            setListOptionsPatients(patients.sort((a, b) => {
-
-                if (a.name < b.name) {
-                    return - 1
-                } else if (a.name > b.name) {
-                    return 1
-                }
-    
-                return 0
-            }))
-        }
-    }
 
     const handleListOptionsCompanay = (event: ChangeEvent<HTMLInputElement>): void => {
         const name = event.target.value
@@ -388,73 +340,8 @@ export const Form: React.FC = () => {
                     }) : null
                 }
             </SectionTypeExamAso>
-            <SectionPatient>
-                <InputName
-                    placeholder="Paciente"
-                    id="name"
-                    name="name"
-                    value={form.name}
-                    required
-                    autoComplete="off"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); setIdPatient("") }}
-                />
-                <ButtonSearch value={"Buscar"} onClick={openPatientsModal} />
-                <CustomModal isOpen={modalPatientsIsOpen} onRequestClose={closePatientsModal}>
-                    <InputSearch placeholder="Digite o nome do paciente..."
-                        value={form.searchPatient}
-                        id="searchPatient"
-                        name="searchPatient"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptionsPatient(event)}}
-                    />
-                    {
-                        !loading ? <ListShearch>
-                            <ItemShearchHeader>
-                                <HeaderName>Nome</HeaderName>
-                                <HeaderRG>RG</HeaderRG>
-                                <HeaderCPF>CPF</HeaderCPF>
-                            </ItemShearchHeader>
-                            {
-                                listOpionsPatients.map((patient) => {
-                                    const dataPatient: {[key: string] : string}[]= [
-                                        {
-                                            name: patient.name
-                                        },
-                                        {
-                                            rg: patient.rg
-                                        },
-                                        {
-                                            cpf: patient.cpf ? patient.cpf : ""
-                                        }
-                                    ]
-
-                                    return(
-                                        <ItemShearch key={patient.id} onDoubleClick={() => {fillForm(dataPatient, patient.id, 'patient')}}>
-                                            <ItemName>{patient.name}</ItemName>
-                                            <ItemRG>{patient.rg}</ItemRG>
-                                            <ItemCPF>{patient.cpf ? patient.cpf : ""}</ItemCPF>
-                                        </ItemShearch>
-                                    )
-                                })
-                            }
-                        </ListShearch> : null
-                    }
-                </CustomModal>
-                <InputRG placeholder="RG"
-                    id="rg"
-                    name="rg"
-                    value={form.rg}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); setIdCompany("")}}
-                    required
-                    autoComplete="off"
-                />
-                <InputCPF placeholder="CPF"
-                    id="cpf"
-                    name="cpf"
-                    value={form.cpf}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event)}}
-                    autoComplete="off"
-                />
-            </SectionPatient>
+           
+            <Patient/>
             <SectionCompany>
                 <InputName placeholder="Empresa"
                     id="nameCompany"
