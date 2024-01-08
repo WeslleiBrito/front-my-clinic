@@ -36,9 +36,7 @@ export const Form: React.FC = () => {
     const [form, onChange] = useForm(
         {
             typeExamAso: "",
-            functionPatient: "",
-            searchPatient: "",
-            searchCompany: ""
+            functionPatient: ""
         })
   
 
