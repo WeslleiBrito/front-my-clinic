@@ -33,13 +33,13 @@ export const Form: React.FC = () => {
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
     const [comments, setComments] = useState('');
+    const [selectedTypeExamAso, setSelectedTypeExamAso] = useState<string>("")
     const [form, onChange] = useForm(
         {
-            typeExamAso: "",
             functionPatient: ""
-        })
+        }
+    )
   
-
     const handleCheckboxRisck = (id: string) => {
 
         const elementExist = occupationaisRisckForm.find((risck) => risck.id === id)
@@ -88,10 +88,14 @@ export const Form: React.FC = () => {
         setComments(newValue);
     }
 
+    const handleTypeExamAso = (id: string): void => {
+        setSelectedTypeExamAso(id)
+    }
+
     const sendForm = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (!form.typeExamAso) {
+        if (selectedTypeExamAso.length === 0) {
             alert("O tipo do aso não foi informado.")
             return
         }
@@ -145,7 +149,7 @@ export const Form: React.FC = () => {
             }),
             idOccupationalHazards: occupationaisRisckForm,
             idPatient: idPatient,
-            idTypeExamAso: form.typeExamAso,
+            idTypeExamAso: selectedTypeExamAso,
             status: statusPatient,
             comments
         }
@@ -180,8 +184,8 @@ export const Form: React.FC = () => {
                                 <ItemTypeExam
                                     value={type.id}
                                     name='typeExamAso'
-                                    checked={type.id === form.typeExamAso}
-                                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event) }}
+                                    checked={type.id === selectedTypeExamAso}
+                                    onChange={() => {handleTypeExamAso(type.id)}}
                                 />
                                 {type.name}
                             </LableItem>

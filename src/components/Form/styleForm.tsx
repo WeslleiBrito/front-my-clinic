@@ -22,8 +22,6 @@ export const SectionListExams = styled.section`
 `
 export const ItemExamCheckbox = styled.input.attrs({type: "checkbox"})` 
 `
-export const InputDateExam = styled.input.attrs({type: "date"})`  
-`
 export const InputFunctionPatient = styled.input.attrs({type: "text"})`  
 `
 export const StatusPatientFit = styled.input.attrs({type: "radio"})`
