@@ -1,9 +1,7 @@
 import { useContext, useState, ChangeEvent, FormEvent } from "react";
 import { DataContext } from '../../context/dataContext';
 import {
-    FormPatient,
-    SectionCompany,
-    InputCNPJ,
+    FormAso,
     SectionTypeExamAso,
     ItemTypeExam,
     LableItem,
@@ -15,103 +13,34 @@ import {
     StatusPatientFit,
     StatusPatientUnfit,
     InputComments,
-    ButtonSubmit,
-    InputName,
-    ButtonSearch,
-    ListShearch,
-    ItemShearch,
-    InputSearch,
-    HeaderName,
-    HeaderCPF,
-    ItemShearchHeader,
-    ItemName,
-    ItemCPF
+    ButtonSubmit
 } from './styleForm';
 import { useForm } from "../../hooks/useForm";
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Company, CreateCompanyAPI, InputCreateForm} from "../../types/types";
-import { CustomModal } from '../ModalSearch/ModalSearch'
+import { CreateCompanyAPI, InputCreateForm} from "../../types/types";
 import React from 'react'
-import {Patient} from '../Patient/Patient'
+import { Patient } from '../Patient/Patient'
+import { Company } from "../Company/Company";
 
 
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm } = context
-    const [listOpionsCompanies, setListOptionsCompanies] = useState<Company[]>([])
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany } = context
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
-    const [idPatient, setIdPatient] = useState<string>("")
-    const [idCompany, setIdCompany] = useState<string>("")
     const [comments, setComments] = useState('');
-    const [form, onChange, onItemClick] = useForm(
+    const [form, onChange] = useForm(
         {
-            name: "",
-            rg: "",
-            cpf: "",
-            nameCompany: "",
-            cnpj: "",
             typeExamAso: "",
             functionPatient: "",
             searchPatient: "",
             searchCompany: ""
         })
-
-    const [modalCompaniesIsOpen, setModalCompaniesIsOpen] = useState(false);
-
-
-    const openCompaniesModal = () => {
-        setModalCompaniesIsOpen(true);
-    };
-
-    const closeCompaniesModal = () => {   
-        setModalCompaniesIsOpen(false);
-    };
-
-
-    const handleListOptionsCompanay = (event: ChangeEvent<HTMLInputElement>): void => {
-        const name = event.target.value
-     
-        if (name.length > 0) {
-            const newOptions: Company[] = companies.filter((company) => {
-                return company.name.toLowerCase().includes(name.toLowerCase())
-            }).map((newElement) => {
-                return {
-                    name: newElement.name,
-                    cnpj: newElement.cnpj,
-                    id: newElement.id,
-                    createdAt: newElement.createdAt,
-                    updatedAt: newElement.updatedAt
-                }
-            }).sort((a, b) => {
-
-                if (a.name < b.name) {
-                    return - 1
-                } else if (a.name > b.name) {
-                    return 1
-                }
-    
-                return 0
-            })
-
-            setListOptionsCompanies(newOptions)
-        }else {
-            setListOptionsCompanies(companies.sort((a, b) => {
-
-                if (a.name < b.name) {
-                    return - 1
-                } else if (a.name > b.name) {
-                    return 1
-                }
-    
-                return 0
-            }))
-        }
-    }
+  
 
     const handleCheckboxRisck = (id: string) => {
 
@@ -184,43 +113,27 @@ export const Form: React.FC = () => {
             return
         }
 
-        if (patients.find((patient) => patient.rg === form.rg && patient.name.toLocaleLowerCase() === form.name.toLocaleLowerCase()) === undefined && idPatient.length === 0) {
+        if (patients.find((patient) => patient.rg === formPatient.rg && patient.name.toLocaleLowerCase() === formPatient.name.toLocaleLowerCase()) === undefined && idPatient.length === 0) {
 
             const input: { name: string, rg: string, cpf?: string } = {
-                name: form.name,
-                rg: form.rg,
-                cpf: form.cpf.length > 0 ? form.cpf : undefined
+                name: formPatient.name,
+                rg: formPatient.rg,
+                cpf: formPatient.cpf
             }
 
-            const id = await createPatient(input) 
-
-            if(typeof(id) === "undefined"){
-                return
-            }else{
-                setIdPatient(id)
-            }
+            await createPatient(input) 
             
         }
 
-        if (companies.find((company) => company.cnpj === form.cnpj && company.name.toLocaleLowerCase() === form.nameCompany.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
+        if (companies.find((company) => company.cnpj === formCompany.cnpj && company.name.toLocaleLowerCase() === formCompany.name.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
 
             const input: CreateCompanyAPI = {
-                name: form.name,
-                cnpj: form.cnpj
+                name: formCompany.name,
+                cnpj: formCompany.cnpj
             }
-
             
-            const id = await createCompany(input)
-
-            if(typeof(id) === "undefined"){
-                return
-            }else{
-
-                setIdCompany(id)
-            }
-
+            await createCompany(input)
         }
-
 
         const dataForm: InputCreateForm = {
             functionPatient: form.functionPatient,
@@ -249,18 +162,8 @@ export const Form: React.FC = () => {
         }
     }
 
-    const fillForm = (datas: {[key: string]: string}[], id: string, form: 'company' | 'patient'): void => {
-        onItemClick(datas)
-        if(form === 'company'){
-            closeCompaniesModal()
-            setIdCompany(id)
-        }else{
-            setIdPatient(id)
-        }
-    }
-
     return (
-        <FormPatient onSubmit={sendForm}>
+        <FormAso onSubmit={sendForm}>
 
             <SectionTypeExamAso>
                 {
@@ -289,60 +192,7 @@ export const Form: React.FC = () => {
                 }
             </SectionTypeExamAso>
             <Patient/>
-            <SectionCompany>
-                <InputName placeholder="Empresa"
-                    id="nameCompany"
-                    name="nameCompany"
-                    value={form.nameCompany}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event) }}
-                    required
-                    autoComplete="off"
-                />
-                <ButtonSearch value={"Buscar"} onClick={openCompaniesModal} />
-                <CustomModal isOpen={modalCompaniesIsOpen} onRequestClose={closeCompaniesModal}>
-                    <InputSearch placeholder="Digite o nome da empresa..."
-                        value={form.searchCompany}
-                        id="searchCompany"
-                        name="searchCompany"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event); handleListOptionsCompanay(event)}}
-                    />
-                    {
-                        !loading ? <ListShearch>
-                            <ItemShearchHeader>
-                                <HeaderName>Nome</HeaderName>
-                                <HeaderCPF>CNPJ</HeaderCPF>
-                            </ItemShearchHeader>
-                            {
-                                listOpionsCompanies.map((item) => {
-                                    const dataCompany: {[key: string] : string}[]= [
-                                        {
-                                            nameCompany: item.name
-                                        },
-                                        {
-                                            cnpj: item.cnpj
-                                        }
-                                    ]
-                                    return(
-                                        <ItemShearch key={item.id} onDoubleClick={() => {fillForm(dataCompany, item.id, 'company')}}>
-                                            <ItemName>{item.name}</ItemName>
-                                            <ItemCPF>{item.cnpj}</ItemCPF>
-                                        </ItemShearch>
-                                    )
-                                })
-                            }
-                        </ListShearch> : null
-                    }
-                </CustomModal>
-                <InputCNPJ placeholder="CNPJ"
-                    id="cnpj"
-                    name="cnpj"
-                    value={form.cnpj}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event) }}
-                    required
-                    autoComplete="off"
-                />
-
-            </SectionCompany>
+            <Company/>
             <SectionTypeExamAso>
                 {
                     !loading ? occupationalHazards.sort((a, b) => {
@@ -435,6 +285,6 @@ export const Form: React.FC = () => {
                 placeholder="Obeservações..."
             />
             <ButtonSubmit value={"Enviar"} />
-        </FormPatient>
+        </FormAso>
     );
 };

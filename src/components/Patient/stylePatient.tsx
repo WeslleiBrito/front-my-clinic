@@ -8,9 +8,6 @@ export const InputName = styled.input.attrs({ type: "text" })`
     height: 4vh;
 `
 
-export const ButtonSearch = styled.input.attrs({type: "button"})`
-`
-
 export const InputRG = styled.input.attrs({type: "text"})`
     width: 35%;
     height: 4vh;
@@ -55,5 +52,3 @@ export const RgItem = styled.p`
 export const CPFItem = styled.p`
     user-select: none;
 `
-
-export const InputSearch = styled.input.attrs({type: "text"})``

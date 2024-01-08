@@ -1,4 +1,4 @@
-import {createContext} from "react";
+import {ChangeEvent, createContext} from "react";
 import { ContextInterface } from "../types/types";
 
 const defaultContextValue: ContextInterface = {
@@ -12,8 +12,8 @@ const defaultContextValue: ContextInterface = {
     loading: true,
     error: false,
     setPatients: () => {},
-    createPatient: (): string | undefined => { return },
-    createCompany: (): string | undefined => { return },
+    createPatient: async (): Promise<void> => { return },
+    createCompany: async (): Promise<void> => { return },
     setLoading: () => {},
     createForm: async (): Promise<boolean | undefined> => {return},
     handleFunctionPatient: () => {},
@@ -30,7 +30,14 @@ const defaultContextValue: ContextInterface = {
       cpf: ""
     },
     handleFormPatient: () => {},
-    fillFormPatient: () => {}
+    fillFormPatient: () => {},
+    formCompany: {
+      name: "",
+      cnpj: ""
+    },
+    handleFormCompany: (event: ChangeEvent<HTMLInputElement>) => {},
+    fillFormCompany: (id: string) => {},
+    idCompany: ""
   };
 
 

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react'
 import { DataContext } from './dataContext'
 import { useFachtData } from '../hooks/useFechtDataHook'
-import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputCreateForm, Patient, ResponseErrorAxios } from '../types/types'
+import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputCreateForm, Patient, ResponseErrorAxios, FormCompany } from '../types/types'
 import axios, { AxiosError }  from 'axios';
 import { BASE_URL } from '../../src/constants/BASE_URL'
 
@@ -17,7 +17,9 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const [companies, setCompany] = useState<Company[]>([])
     const [forms, setForms] = useState<Form[]>([])
     const [formPatient, setFormPatient] = useState<FormPatient>({name: "", rg: "", cpf: ""})
+    const [formCompany, setFormCompany] = useState<FormCompany>({name: "", cnpj: ""})
     const [idPatient, setIdPatient] = useState<string>("")
+    const [idCompany, setIdCompany] = useState<string>("")
     const [dataForm, setDataForm] = useState<InputCreateForm>(
         {
             functionPatient: "",
@@ -72,6 +74,12 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         handleIdPatient("")
     }
 
+    const handleFormCompany = (event: ChangeEvent<HTMLInputElement>): void => {
+        const {name, value} = event.target
+        setFormCompany((prevForm) => ({ ...prevForm, [name]: value }))
+        handleIdCompany("")
+    }
+
     const fillFormPatient = (id: string): void => {
         const patientSelected = patients.find((patient) => patient.id === id) as Patient
         const data = {
@@ -84,20 +92,31 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         setIdPatient(id)
     }
 
-    const createPatient = async (input: CreatePatientAPI): Promise<string | undefined> => {
+    const fillFormCompany = (id: string): void => {
+
+        const companySelected = companies.find((company) => company.id === id) as Company
+
+        const data = {
+            name: companySelected.name,
+            cnpj: companySelected.cnpj
+        }
+        
+        setFormCompany(data)
+        setIdCompany(id)
+    }
+
+    const createPatient = async (input: CreatePatientAPI): Promise<void> => {
         try {
             
-            const response = await axios.post(BASE_URL + '/patients',
+            await axios.post(BASE_URL + '/patients',
                 input
             )
 
             const result: Patient[] = (await axios.get(BASE_URL + '/patients')).data
             
             setPatients(result)
-
-            return response.data.id as string
+            setIdPatient(result[result.length - 1].id)
             
-
         } catch (error) {
             if(error instanceof AxiosError){
                 if(typeof(error.response?.data) === "string"){
@@ -115,18 +134,17 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
-    const createCompany = async (input: CreateCompanyAPI): Promise<string | undefined> => {
+    const createCompany = async (input: CreateCompanyAPI): Promise<void> => {
 
         try {
-            const response = await axios.post(BASE_URL + '/company',
+            await axios.post(BASE_URL + '/company',
                 input
             )
 
             const result: Company[] = (await axios.get(BASE_URL + '/company')).data
 
             setCompany(result)
-
-            return response.data.id as string
+            setIdCompany(result[result.length - 1].id)
 
         } catch (error) {
             if(error instanceof AxiosError){
@@ -188,7 +206,11 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         handleStatus,
         formPatient,
         handleFormPatient,
-        fillFormPatient
+        fillFormPatient,
+        formCompany,
+        handleFormCompany,
+        fillFormCompany,
+        idCompany
     }
 
     return <DataContext.Provider value={context}>{props.children}</DataContext.Provider>

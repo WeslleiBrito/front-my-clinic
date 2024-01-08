@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react"
 
 export enum USER_ROLES {
     ADMIN = "ADMIN",
@@ -81,6 +82,7 @@ export interface ContextInterface {
     companies: Company[],
     patients: Patient[],
     idPatient: string,
+    idCompany: string,
     exams: Exam[],
     occupationalHazards: OccupationalRisc[],
     forms: Form[],
@@ -88,8 +90,8 @@ export interface ContextInterface {
     loading: boolean,
     error: boolean,
     setPatients: Function,
-    createPatient: Function,
-    createCompany: Function,
+    createPatient: (input: CreatePatientAPI) => Promise<void>,
+    createCompany: (input: CreateCompanyAPI) => Promise<void>,
     setLoading: Function,
     createForm: (input: InputCreateForm) => Promise<boolean | undefined>,
     handleFunctionPatient: Function,
@@ -102,7 +104,10 @@ export interface ContextInterface {
     handleStatus: Function,
     formPatient: FormPatient,
     handleFormPatient: Function,
-    fillFormPatient: (id: string) => void
+    fillFormPatient: (id: string) => void,
+    formCompany: FormCompany,
+    handleFormCompany: (event: ChangeEvent<HTMLInputElement>) => void,
+    fillFormCompany: (id: string) => void
 }
 
 export interface TypeExamAso {
@@ -136,7 +141,7 @@ export interface CreatePatientAPI {
 
 export interface CreateCompanyAPI {
     name: string,
-    cnpj: string
+    cnpj?: string 
 }
 
 export interface ResponseErrorAxios {
@@ -150,4 +155,9 @@ export interface FormPatient {
     name: string,
     rg: string,
     cpf?: string
+}
+
+export interface FormCompany {
+    name: string,
+    cnpj?: string
 }

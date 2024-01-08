@@ -1,12 +1,11 @@
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { DataContext } from '../../context/dataContext'
-import { ButtonSearch, 
+import { 
          CPFItem, 
          HeaderSearch, 
          InputCPF, 
          InputName, 
          InputRG, 
-         InputSearch, 
          ItemSearch, 
          ListShearch, 
          NameItem, 
@@ -15,12 +14,13 @@ import { ButtonSearch,
 } from './stylePatient'
 import { CustomModal } from '../ModalSearch/ModalSearch'
 import { Patient as PatientType} from '../../types/types'
+import {ButtonSearch, InputSearch} from '../Form/styleForm'
 
 
-export const Patient = () => {
+export const Patient = (): JSX.Element | null => {
     const context = useContext(DataContext)
 
-    const { loading, patients, createPatient, handleFormPatient, formPatient, fillFormPatient } = context
+    const { loading, patients, handleFormPatient, formPatient, fillFormPatient } = context
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [search, setSearch] = useState("")
     const [listOpionsPatients, setListOptionsPatients] = useState<PatientType[]>([])
