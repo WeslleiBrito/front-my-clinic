@@ -89,9 +89,8 @@ export const Patient = (): JSX.Element | null => {
                 <SectionPatient>
                 <InputName
                     placeholder="Paciente"
-                    id="name"
-                    name="name"
-                    value={formPatient.name}
+                    name="namePatient"
+                    value={formPatient.namePatient}
                     required
                     autoComplete="off"
                     onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event)}}
@@ -99,7 +98,6 @@ export const Patient = (): JSX.Element | null => {
                 <ButtonSearch value={"Buscar"} onClick={openModal} />
                 <CustomModal isOpen={modalIsOpen} onRequestClose={closeModal}>
                         <InputSearch placeholder='Pesquise aqui...'
-                            id='search'
                             name='search'
                             value={search}
                             onChange={(event: ChangeEvent<HTMLInputElement>) => {handleSearch(event); hanlleListPatient(event)}}
@@ -124,7 +122,6 @@ export const Patient = (): JSX.Element | null => {
                         </ListShearch>
                 </CustomModal>
                 <InputRG placeholder="RG"
-                    id="rg"
                     name="rg"
                     value={formPatient.rg}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event)}}
@@ -132,7 +129,6 @@ export const Patient = (): JSX.Element | null => {
                     autoComplete="off"
                 />
                 <InputCPF placeholder="CPF"
-                    id="cpf"
                     name="cpf"
                     value={formPatient.cpf || ""}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event)}}

@@ -25,14 +25,14 @@ const defaultContextValue: ContextInterface = {
     includeIdExam: () => {},
     removeIdExam: () => {},
     formPatient: {
-      name: "",
+      namePatient: "",
       rg: "",
       cpf: ""
     },
     handleFormPatient: () => {},
     fillFormPatient: () => {},
     formCompany: {
-      name: "",
+      nameCompany: "",
       cnpj: ""
     },
     handleFormCompany: (event: ChangeEvent<HTMLInputElement>) => {},

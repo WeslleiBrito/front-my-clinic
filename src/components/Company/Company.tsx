@@ -48,7 +48,7 @@ export const Company = (): JSX.Element | null => {
         setSearch(event.target.value)
     }
 
-    const hanlleListCompany = (event: ChangeEvent<HTMLInputElement>): void => {
+    const handleListCompany = (event: ChangeEvent<HTMLInputElement>): void => {
         const newName = event.target.value
         const filterList: CompanyType[] = companies.filter((company) => {
             return company.name.toLowerCase().includes(newName.toLowerCase())
@@ -75,9 +75,8 @@ export const Company = (): JSX.Element | null => {
         return (
             <SectionCompany>
                 <InputName placeholder="Empresa"
-                    id="nameCompany"
                     name="nameCompany"
-                    value={formCompany.name}
+                    value={formCompany.nameCompany}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormCompany(event) }}
                     required
                     autoComplete="off"
@@ -88,7 +87,7 @@ export const Company = (): JSX.Element | null => {
                         value={search}
                         id="searchCompany"
                         name="searchCompany"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) => { handleSearch(event); hanlleListCompany(event)}}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => { handleSearch(event); handleListCompany(event)}}
                     />
                     {
                         !loading ? <ListShearch>
@@ -111,7 +110,6 @@ export const Company = (): JSX.Element | null => {
                     }
                 </CustomModal>
                 <InputCNPJ placeholder="CNPJ"
-                    id="cnpj"
                     name="cnpj"
                     value={formCompany.cnpj}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormCompany(event) }}

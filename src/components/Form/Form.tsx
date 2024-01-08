@@ -115,10 +115,10 @@ export const Form: React.FC = () => {
             return
         }
 
-        if (patients.find((patient) => patient.rg === formPatient.rg && patient.name.toLocaleLowerCase() === formPatient.name.toLocaleLowerCase()) === undefined && idPatient.length === 0) {
+        if (patients.find((patient) => patient.rg === formPatient.rg && patient.name.toLocaleLowerCase() === formPatient.namePatient.toLocaleLowerCase()) === undefined && idPatient.length === 0) {
 
             const input: { name: string, rg: string, cpf?: string } = {
-                name: formPatient.name,
+                name: formPatient.namePatient,
                 rg: formPatient.rg,
                 cpf: formPatient.cpf
             }
@@ -127,10 +127,10 @@ export const Form: React.FC = () => {
             
         }
 
-        if (companies.find((company) => company.cnpj === formCompany.cnpj && company.name.toLocaleLowerCase() === formCompany.name.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
+        if (companies.find((company) => company.cnpj === formCompany.cnpj && company.name.toLocaleLowerCase() === formCompany.nameCompany.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
 
             const input: CreateCompanyAPI = {
-                name: formCompany.name,
+                name: formCompany.nameCompany,
                 cnpj: formCompany.cnpj
             }
             
@@ -210,6 +210,7 @@ export const Form: React.FC = () => {
                         return (
                             <LableItem key={risck.id}>
                                 <ItemRisckOccupational
+                                    id={risck.id + risck.name}
                                     value={risck.id}
                                     onChange={() => handleCheckboxRisck(risck.id)}
 
@@ -235,6 +236,7 @@ export const Form: React.FC = () => {
                         return (
                             <LableItem key={exam.id}>
                                 <ItemExamCheckbox
+                                    id={exam.id}
                                     value={exam.id}
                                     checked={examsForm.find((item) => item.id === exam.id) ? true : false}
                                     onChange={() => handleCheckboxExam(exam.id)}
@@ -263,6 +265,7 @@ export const Form: React.FC = () => {
                 />
                 <LableItem>
                     <StatusPatientFit
+                        id="fit"
                         onChange={() => setStatusPatient(true)}
                         checked={statusPatient === true}
                     />
@@ -270,6 +273,7 @@ export const Form: React.FC = () => {
                 </LableItem>
                 <LableItem>
                     <StatusPatientUnfit
+                        id="unFit"
                         onChange={() => setStatusPatient(false)}
                         checked={statusPatient === false}
                     />
@@ -277,7 +281,6 @@ export const Form: React.FC = () => {
                 </LableItem>
             </SectionFunction>
             <InputComments
-                id="comments"
                 name="comments"
                 value={comments}
                 onChange={handleComments}

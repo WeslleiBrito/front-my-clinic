@@ -152,12 +152,12 @@ export interface ResponseErrorAxios {
 }
 
 export interface FormPatient { 
-    name: string,
+    namePatient: string,
     rg: string,
     cpf?: string
 }
 
 export interface FormCompany {
-    name: string,
+    nameCompany: string,
     cnpj?: string
 }

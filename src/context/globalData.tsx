@@ -16,8 +16,8 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const [patients, setPatients] = useState<Patient[]>([])
     const [companies, setCompany] = useState<Company[]>([])
     const [forms, setForms] = useState<Form[]>([])
-    const [formPatient, setFormPatient] = useState<FormPatient>({name: "", rg: "", cpf: ""})
-    const [formCompany, setFormCompany] = useState<FormCompany>({name: "", cnpj: ""})
+    const [formPatient, setFormPatient] = useState<FormPatient>({namePatient: "", rg: "", cpf: ""})
+    const [formCompany, setFormCompany] = useState<FormCompany>({nameCompany: "", cnpj: ""})
     const [idPatient, setIdPatient] = useState<string>("")
     const [idCompany, setIdCompany] = useState<string>("")
     const [dataForm, setDataForm] = useState<InputCreateForm>(
@@ -83,7 +83,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const fillFormPatient = (id: string): void => {
         const patientSelected = patients.find((patient) => patient.id === id) as Patient
         const data = {
-            name: patientSelected.name,
+            namePatient: patientSelected.name,
             rg: patientSelected.rg,
             cpf: patientSelected.cpf
         }
@@ -97,7 +97,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         const companySelected = companies.find((company) => company.id === id) as Company
 
         const data = {
-            name: companySelected.name,
+            nameCompany: companySelected.name,
             cnpj: companySelected.cnpj
         }
         
@@ -173,8 +173,11 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
             if(error instanceof AxiosError){
                 if(error.code === "ERR_NETWORK"){
                     alert('Servidor fora do ar, entre em contato com o desenvolvedor do sistema.')
+                }else{
+                    console.log(error);
+                    
                 }
-               
+                
             }
 
             return
