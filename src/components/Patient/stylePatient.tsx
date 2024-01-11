@@ -33,7 +33,7 @@ export const HeaderSearch = styled.li`
 
 export const ItemSearch = styled.li`
     display: flex;
-    :hover {
+    &:hover {
     background-color: #98FB98;
     cursor: default;
   };

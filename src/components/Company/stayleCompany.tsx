@@ -26,7 +26,7 @@ export const ListShearch = styled.ul`
 export const ItemShearch = styled.li`
   display: flex;
   width: 100;
-  :hover {
+  &:hover {
     background-color: #98FB98;
     cursor: default;
   }
