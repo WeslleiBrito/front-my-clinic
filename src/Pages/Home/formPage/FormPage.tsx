@@ -67,11 +67,12 @@ export const FormPage = () => {
             search: ""
         }
     )
+
     const filterListForm = (event: ChangeEvent<HTMLInputElement>) => {
         const valueSearch = event.target.value
 
         const newList = forms.filter((form) => {            
-            return form[typeSearchMethod]?.toLowerCase().includes(valueSearch.toLowerCase())
+            return form[typeSearchMethod]?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(valueSearch.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
         }).sort((a, b) => {
             const dateA = new Date(a.createdAt)
             const dateB = new Date(b.createdAt)
@@ -90,6 +91,24 @@ export const FormPage = () => {
 
         setListForm(newList)
     }
+
+    const handleOrder = (order: TOrders, column: searchMethods) => {
+        const newOrder = listForm.sort((a, b) => {
+            const dateA = new Date(a.createdAt)
+            const dateB = new Date(b.createdAt)
+
+            if(order === "decrescent"){
+                return dateB.getTime() - dateA.getTime()
+            }
+
+            if(order === "crescent"){
+                return dateA.getTime() - dateB.getTime()
+            }
+
+            return 0
+        })
+    }
+
     const component = (
         <Main>
             <SectionSearch>

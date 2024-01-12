@@ -5,9 +5,15 @@ export const SectionCompany = styled.section`
 export const ItemShearchHeader = styled.li`
   display: flex;
 `
+
+export const AreaInput = styled.div`
+`
+
 export const InputName = styled.input.attrs({ type: "text" })`
     width: 70%;
     height: 4vh;
+`
+export const OrderDiv = styled.div`
 `
 export const InputCNPJ = styled.input.attrs({type: "text"})`
     width: 35%;
