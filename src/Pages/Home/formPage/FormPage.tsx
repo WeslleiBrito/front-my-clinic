@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { ChangeEvent, useContext, useEffect, useState } from "react"
 import {
     CNPJItem,
     CPFItem,
@@ -19,25 +19,26 @@ import {
     NewButton,
     OptiosRadios,
     SectionAction,
-    SectionSearch
+    SectionSearch,
+    TypeExam
 } from "./styleFormPage"
 import { DataContext } from "../../../context/dataContext"
 import { Form } from "../../../types/types"
 import { format } from 'date-fns';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useForm } from "../../../hooks/useForm";
 
 
 export const FormPage = () => {
 
     const context = useContext(DataContext)
 
-    type searchMethods  = "name" | "company" | "cpf" | "cnpj" | "function"
+    type searchMethods  = "namePatient" | "nameCompany" | "cpf" | "cnpj" | "functionPatient"
     type TOrders = "crescent" | "decrescent"
     const {forms, loading} = context
 
     const [listForm, setListForm] = useState<Form[]>([])
-    const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("name")
+    const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("namePatient")
     const [order, setOrder] = useState<TOrders>("decrescent")
 
     useEffect(() => {
@@ -61,28 +62,68 @@ export const FormPage = () => {
 
     }, [forms, order])
 
+    const [form, onChange] = useForm(
+        {
+            search: ""
+        }
+    )
+    const filterListForm = (event: ChangeEvent<HTMLInputElement>) => {
+        const valueSearch = event.target.value
+
+        const newList = forms.filter((form) => {            
+            return form[typeSearchMethod]?.toLowerCase().includes(valueSearch.toLowerCase())
+        }).sort((a, b) => {
+            const dateA = new Date(a.createdAt)
+            const dateB = new Date(b.createdAt)
+
+            if(order === "decrescent"){
+                return dateB.getTime() - dateA.getTime()
+            }
+
+            if(order === "crescent"){
+                return dateA.getTime() - dateB.getTime()
+            }
+
+            return 0
+        })
+
+
+        setListForm(newList)
+    }
     const component = (
         <Main>
             <SectionSearch>
                 <DivOptions>
                     <Lable>
-                        <OptiosRadios/>
+                        <OptiosRadios checked={typeSearchMethod === "namePatient"}
+                            onChange={() => {setTypeSearchMethod("namePatient")}}
+                        />
                         Nome
                     </Lable>
                     <Lable>
-                        <OptiosRadios/>
+                        <OptiosRadios checked={typeSearchMethod === "nameCompany"}
+                            onChange={() => {setTypeSearchMethod("nameCompany")}}
+                        />
                         Empresa
                     </Lable>
                     <Lable>
-                        <OptiosRadios/>
+                        <OptiosRadios checked={typeSearchMethod === "cpf"}
+                            onChange={() => {setTypeSearchMethod("cpf")}}
+                        />
                         CPF
                     </Lable>
                     <Lable>
-                        <OptiosRadios/>
+                        <OptiosRadios checked={typeSearchMethod === "cnpj"}
+                            onChange={() => {setTypeSearchMethod("cnpj")}}
+                        />
                         CNPJ
                     </Lable>
                 </DivOptions>
-                <InputSearch/>
+                <InputSearch
+                    name="search"
+                    value={form.search}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); filterListForm(event)}}
+                />
                 <DivButtons>
                     <NewButton value={"Novo"}/>
                     <EditButton value={"Editar"}/>
@@ -93,21 +134,15 @@ export const FormPage = () => {
                 <ItemHeaderList>
                     <NameItem>Nome</NameItem>
                     <CompanyItem>Empresa</CompanyItem>
-                    <DateItem>Dt. Criação</DateItem>
                     <CPFItem>CPF</CPFItem>
                     <CNPJItem>CNPJ</CNPJItem>
                     <FunctionPatientItem>Função</FunctionPatientItem>
+                    <TypeExam>Tipo de Exame</TypeExam>
+                    <DateItem>Dt. Criação</DateItem>
                 </ItemHeaderList>
                     {
                         listForm.map((form) => {
-                            const date = new Date(form.createdAt)
-                            const year = date.getFullYear()
-                            const month = String(date.getMonth() + 1).startsWith('0', 1)
-                            const day = String(date.getDate).startsWith('0', 1)
-                            console.log(date);
-                            
-                            console.log(date.getMilliseconds());
-                            
+                        
                             return(
                                 <ItemList key={form.id}>
                                     <NameItem>{form.namePatient}</NameItem>
@@ -115,7 +150,8 @@ export const FormPage = () => {
                                     <CPFItem>{form.cpf}</CPFItem>
                                     <CNPJItem>{form.cnpj}</CNPJItem>
                                     <FunctionPatientItem>{form.functionPatient}</FunctionPatientItem>
-                                    <DateItem>{format(date, "dd/MM/yyyy")}</DateItem>
+                                    <TypeExam>{form.typeExamAso.name}</TypeExam>
+                                    <DateItem>{format(new Date(form.createdAt), "dd/MM/yyyy")}</DateItem>
                                 </ItemList>
                             )
                         })

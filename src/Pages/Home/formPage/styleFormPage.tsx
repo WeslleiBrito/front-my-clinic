@@ -32,14 +32,30 @@ export const ItemList = styled.li`
     display: flex;
 `
 
-export const NameItem = styled.p``
+export const NameItem = styled.p`
+    width: 20vw;
+`
 
-export const CompanyItem = styled.p``
+export const CompanyItem = styled.p`
+    width: 23vw;
+`
+export const CPFItem = styled.p`
+    width: 8vw;
+`
 
-export const DateItem = styled.p``
+export const CNPJItem = styled.p`
+    width: 10vw;
+`
 
-export const CPFItem = styled.p``
+export const FunctionPatientItem = styled.p`
+    width: 15vw;
+`
 
-export const CNPJItem = styled.p``
+export const TypeExam = styled.p`
+    width: 13vw;
+`
+export const DateItem = styled.p`
+`
 
-export const FunctionPatientItem = styled.p``
+
+
