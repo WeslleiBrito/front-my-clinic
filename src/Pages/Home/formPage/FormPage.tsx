@@ -32,35 +32,21 @@ import { useForm } from "../../../hooks/useForm";
 export const FormPage = () => {
 
     const context = useContext(DataContext)
-
-    type searchMethods  = "namePatient" | "nameCompany" | "cpf" | "cnpj" | "functionPatient"
+    type searchMethods  = "namePatient" | "nameCompany" | "cpf" | "cnpj" | "functionPatient" | "createdAt"
     type TOrders = "crescent" | "decrescent"
     const {forms, loading} = context
 
     const [listForm, setListForm] = useState<Form[]>([])
     const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("namePatient")
-    const [order, setOrder] = useState<TOrders>("decrescent")
+    const [order, setOrder] = useState<boolean>(true)
 
     useEffect(() => {
 
-        const newList: Form[] = forms.sort((a, b) => {
-            const dateA = new Date(a.createdAt)
-            const dateB = new Date(b.createdAt)
-
-            if(order === "decrescent"){
-                return dateB.getTime() - dateA.getTime()
-            }
-
-            if(order === "crescent"){
-                return dateA.getTime() - dateB.getTime()
-            }
-
-            return 0
-        })
+        const newList: Form[] = forms.reverse()
 
         setListForm(newList)
 
-    }, [forms, order])
+    }, [forms])
 
     const [form, onChange] = useForm(
         {
@@ -77,11 +63,11 @@ export const FormPage = () => {
             const dateA = new Date(a.createdAt)
             const dateB = new Date(b.createdAt)
 
-            if(order === "decrescent"){
+            if(order){
                 return dateB.getTime() - dateA.getTime()
             }
 
-            if(order === "crescent"){
+            if(!order){
                 return dateA.getTime() - dateB.getTime()
             }
 
@@ -92,21 +78,47 @@ export const FormPage = () => {
         setListForm(newList)
     }
 
-    const handleOrder = (order: TOrders, column: searchMethods) => {
-        const newOrder = listForm.sort((a, b) => {
-            const dateA = new Date(a.createdAt)
-            const dateB = new Date(b.createdAt)
+    const handleOrder = (column: searchMethods) => {
+        const newOrder = [...listForm]
+        setOrder(!order)
+        if(column === "createdAt"){
+            console.log("é a coluna da data");
+            
+            newOrder.sort((a, b) => {
+                const dateA = new Date(a.createdAt)
+                const dateB = new Date(b.createdAt)
+                
+                if(dateB.getTime() > dateA.getTime()){
+                    return order ? - 1 : 1
+                }
 
-            if(order === "decrescent"){
-                return dateB.getTime() - dateA.getTime()
-            }
+                if(dateB.getTime() < dateA.getTime()){
+                    return  order ? 1 : - 1
+                }
+                
+                return 0
+            })
 
-            if(order === "crescent"){
-                return dateA.getTime() - dateB.getTime()
-            }
+        }else{
 
-            return 0
-        })
+            newOrder.sort((a, b) => {
+
+                if(a[column] < b[column]){
+                    return order ? - 1 : 1 
+                }
+                
+
+                if(a[column] > b[column]){
+                    return order ? 1 : - 1
+                }
+
+                return 0
+            })
+        }
+        
+        console.log(newOrder)
+        setListForm(newOrder)
+        
     }
 
     const component = (
@@ -151,13 +163,13 @@ export const FormPage = () => {
             </SectionSearch>
             <ListForms>
                 <ItemHeaderList>
-                    <NameItem>Nome</NameItem>
-                    <CompanyItem>Empresa</CompanyItem>
-                    <CPFItem>CPF</CPFItem>
-                    <CNPJItem>CNPJ</CNPJItem>
-                    <FunctionPatientItem>Função</FunctionPatientItem>
+                    <NameItem onClick={() => {handleOrder("namePatient")}}>Nome</NameItem>
+                    <CompanyItem onClick={() => {handleOrder("nameCompany")}}>Empresa</CompanyItem>
+                    <CPFItem onClick={() => {handleOrder("cpf");}}>CPF</CPFItem>
+                    <CNPJItem onClick={() => {handleOrder("cnpj")}}>CNPJ</CNPJItem>
+                    <FunctionPatientItem onClick={() => {handleOrder("functionPatient"); setOrder(!order)}}>Função</FunctionPatientItem>
                     <TypeExam>Tipo de Exame</TypeExam>
-                    <DateItem>Dt. Criação</DateItem>
+                    <DateItem onClick={() => {handleOrder("createdAt")}}>Dt. Criação</DateItem>
                 </ItemHeaderList>
                     {
                         listForm.map((form) => {

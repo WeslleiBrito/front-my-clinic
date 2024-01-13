@@ -26,33 +26,49 @@ export const ListForms = styled.ul``
 
 export const ItemHeaderList = styled.li`
     display: flex;
+    user-select: none;
+    
 `
 
 export const ItemList = styled.li`
     display: flex;
+    user-select: none;
+    
 `
 
 export const NameItem = styled.p`
     width: 20vw;
+    user-select: none;
+    
 `
 
 export const CompanyItem = styled.p`
     width: 23vw;
+    user-select: none;
+    
 `
 export const CPFItem = styled.p`
     width: 8vw;
+    user-select: none;
+    
 `
 
 export const CNPJItem = styled.p`
     width: 10vw;
+    user-select: none;
+    
 `
 
 export const FunctionPatientItem = styled.p`
     width: 15vw;
+    user-select: none;
+    
 `
 
 export const TypeExam = styled.p`
     width: 13vw;
+    user-select: none;
+    
 `
 export const DateItem = styled.p`
 `
