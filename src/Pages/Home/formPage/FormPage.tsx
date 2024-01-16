@@ -29,6 +29,8 @@ import { Form } from "../../../types/types"
 import { format } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useForm } from "../../../hooks/useForm";
+import { goForm } from "../../../Routes/coordinator";
+import { useNavigate } from "react-router-dom";
 
 
 export const FormPage = () => {
@@ -41,7 +43,7 @@ export const FormPage = () => {
     const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("namePatient")
     const [order, setOrder] = useState<boolean>(true)
     const [checkedFormItens, setCheckedFormItens] = useState<string[]>([])
-
+    const navigate = useNavigate()
     useEffect(() => {
 
         const newList: Form[] = forms.reverse()
@@ -123,6 +125,17 @@ export const FormPage = () => {
         
     }
 
+    const handleCheck = (id: string) => {
+
+        const itemExist = checkedFormItens.find((item) => item === id)
+
+        if(!itemExist){
+            setCheckedFormItens([...checkedFormItens, id])
+        }else{
+            setCheckedFormItens([...checkedFormItens].filter((item) => {return item !== id}))
+        }
+    }
+
     const component = (
         <Main>
             <SectionSearch>
@@ -158,7 +171,7 @@ export const FormPage = () => {
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {onChange(event); filterListForm(event)}}
                 />
                 <DivButtons>
-                    <NewButton value={"Novo"}/>
+                    <NewButton value={"Novo"} onClick={() => {goForm(navigate)}}/>
                     <EditButton value={"Editar"}/>
                     <DeleteButton value={"Excluir"}/>
                 </DivButtons>
@@ -178,7 +191,7 @@ export const FormPage = () => {
                         
                             return(
                                 <ItemList key={form.id}>
-                                    <CheckedFormItem/>
+                                    <CheckedFormItem onChange={() => {handleCheck(form.id)}}/>
                                     <NameItem>{form.namePatient}</NameItem>
                                     <CompanyItem>{form.nameCompany}</CompanyItem>
                                     <CPFItem>{form.cpf}</CPFItem>
