@@ -72,6 +72,6 @@ export const TypeExam = styled.p`
 `
 export const DateItem = styled.p`
 `
-
+export const CheckedFormItem = styled.input.attrs({type: "checkbox"})``
 
 

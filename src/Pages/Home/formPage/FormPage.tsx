@@ -20,7 +20,9 @@ import {
     OptiosRadios,
     SectionAction,
     SectionSearch,
-    TypeExam
+    TypeExam,
+    CheckedFormItem
+
 } from "./styleFormPage"
 import { DataContext } from "../../../context/dataContext"
 import { Form } from "../../../types/types"
@@ -33,12 +35,12 @@ export const FormPage = () => {
 
     const context = useContext(DataContext)
     type searchMethods  = "namePatient" | "nameCompany" | "cpf" | "cnpj" | "functionPatient" | "createdAt"
-    type TOrders = "crescent" | "decrescent"
     const {forms, loading} = context
 
     const [listForm, setListForm] = useState<Form[]>([])
     const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("namePatient")
     const [order, setOrder] = useState<boolean>(true)
+    const [checkedFormItens, setCheckedFormItens] = useState<string[]>([])
 
     useEffect(() => {
 
@@ -176,6 +178,7 @@ export const FormPage = () => {
                         
                             return(
                                 <ItemList key={form.id}>
+                                    <CheckedFormItem/>
                                     <NameItem>{form.namePatient}</NameItem>
                                     <CompanyItem>{form.nameCompany}</CompanyItem>
                                     <CPFItem>{form.cpf}</CPFItem>
