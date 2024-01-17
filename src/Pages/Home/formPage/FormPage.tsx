@@ -18,7 +18,6 @@ import {
     NameItem,
     NewButton,
     OptiosRadios,
-    SectionAction,
     SectionSearch,
     TypeExam,
     CheckedFormItem
@@ -43,6 +42,9 @@ export const FormPage = () => {
     const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("namePatient")
     const [order, setOrder] = useState<boolean>(true)
     const [checkedFormItens, setCheckedFormItens] = useState<string[]>([])
+    const [checkedAllForms, setCheckedAllForms] = useState<boolean>(false)
+    const [formSelected, setFormSelected] = useState<string>("")
+
     const navigate = useNavigate()
     useEffect(() => {
 
@@ -57,6 +59,15 @@ export const FormPage = () => {
             search: ""
         }
     )
+    
+    const goEdit = () => {
+        
+        if(formSelected.length < 1){
+            alert("Selecione um formulário aso que deseja editar.")
+        }else{
+            goForm(navigate, formSelected)
+        }
+    }
 
     const filterListForm = (event: ChangeEvent<HTMLInputElement>) => {
         const valueSearch = event.target.value
@@ -125,7 +136,7 @@ export const FormPage = () => {
         
     }
 
-    const handleCheck = (id: string) => {
+    const handleCheck = (id: string): void => {
 
         const itemExist = checkedFormItens.find((item) => item === id)
 
@@ -134,6 +145,17 @@ export const FormPage = () => {
         }else{
             setCheckedFormItens([...checkedFormItens].filter((item) => {return item !== id}))
         }
+    }
+
+    const handleCheckedAll = (): void => {
+
+        if(checkedAllForms){
+            setCheckedFormItens([])
+        }else{
+            setCheckedFormItens([...listForm].map((item) => item.id))
+        }
+
+        setCheckedAllForms(!checkedAllForms)
     }
 
     const component = (
@@ -172,12 +194,13 @@ export const FormPage = () => {
                 />
                 <DivButtons>
                     <NewButton value={"Novo"} onClick={() => {goForm(navigate)}}/>
-                    <EditButton value={"Editar"}/>
+                    <EditButton value={"Editar"} onClick={() => {goEdit()}}/>
                     <DeleteButton value={"Excluir"}/>
                 </DivButtons>
             </SectionSearch>
             <ListForms>
                 <ItemHeaderList>
+                    <CheckedFormItem onChange={() => {handleCheckedAll(); setFormSelected("")}} checked={checkedAllForms}/>
                     <NameItem onClick={() => {handleOrder("namePatient")}}>Nome</NameItem>
                     <CompanyItem onClick={() => {handleOrder("nameCompany")}}>Empresa</CompanyItem>
                     <CPFItem onClick={() => {handleOrder("cpf");}}>CPF</CPFItem>
@@ -190,8 +213,8 @@ export const FormPage = () => {
                         listForm.map((form) => {
                         
                             return(
-                                <ItemList key={form.id}>
-                                    <CheckedFormItem onChange={() => {handleCheck(form.id)}}/>
+                                <ItemList key={form.id} onClick={() => setFormSelected(form.id)} $isActive={formSelected === form.id ? true : false}>
+                                    <CheckedFormItem onChange={() => {handleCheck(form.id)}} checked={checkedFormItens.find((item) => {return item === form.id}) ? true : false}/>
                                     <NameItem>{form.namePatient}</NameItem>
                                     <CompanyItem>{form.nameCompany}</CompanyItem>
                                     <CPFItem>{form.cpf}</CPFItem>

@@ -11,7 +11,7 @@ export const Router = () => {
         <BrowserRouter>
             <Routes>
                 <Route index element={<HomePage />} />
-                <Route path='/form' element={<Form />} />
+                <Route path='/form/:id?' element={<Form />} />
                 <Route path='/forms' element={<FormPage/>} />
             </Routes>
         </BrowserRouter>

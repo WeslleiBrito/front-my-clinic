@@ -1,5 +1,9 @@
 import styled from 'styled-components'
 
+interface ItemListProps {
+    $isActive: boolean;
+}
+
 export const Main = styled.main``
 
 export const SectionSearch = styled.section``
@@ -26,14 +30,13 @@ export const ListForms = styled.ul``
 
 export const ItemHeaderList = styled.li`
     display: flex;
-    user-select: none;
     
 `
 
-export const ItemList = styled.li`
+export const ItemList = styled.li<ItemListProps>`
     display: flex;
-    user-select: none;
     
+    background-color: ${({ $isActive }) => ($isActive ? '#49c5b6' : 'transparent')};
 `
 
 export const NameItem = styled.p`

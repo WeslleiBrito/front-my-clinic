@@ -1,4 +1,4 @@
-import { useContext, useState, ChangeEvent, FormEvent } from "react";
+import { useContext, useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { DataContext } from '../../context/dataContext';
 import {
     FormAso,
@@ -23,17 +23,38 @@ import { CreateCompanyAPI, InputCreateForm} from "../../types/types";
 import React from 'react'
 import { Patient } from '../Patient/Patient'
 import { Company } from "../Company/Company";
-
+import { useParams } from "react-router-dom";
 
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany, forms } = context
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
     const [comments, setComments] = useState('');
     const [selectedTypeExamAso, setSelectedTypeExamAso] = useState<string>("")
+
+    const { id } = useParams();
+
+    useEffect(() => {
+
+        if(id){
+
+            const formExist = forms.find((form) => {return form.id === id})
+            
+            if(formExist){
+                const occupationaisRisck: { id: string }[] = formExist.OccupationalHazards.map((risck) => {return {id: risck.id}}) 
+                setOccupationaisRisckForm(occupationaisRisck)
+                const exams: { id: string, date: Date | null }[] = formExist.exams.map((exam) => {return {id: exam.id, date: new Date(exam.date)}})
+                setExamForm(exams)
+                setStatusPatient(formExist.status)
+                setComments(formExist.comments)
+                setSelectedTypeExamAso(formExist.typeExamAso.id)
+            }
+        }
+    }, [forms, id])
+    
     const [form, onChange] = useForm(
         {
             functionPatient: ""
@@ -213,6 +234,7 @@ export const Form: React.FC = () => {
                                     id={risck.id + risck.name}
                                     value={risck.id}
                                     onChange={() => handleCheckboxRisck(risck.id)}
+                                    checked={occupationaisRisckForm.find((risckItem) => {return risckItem.id === risck.id}) ? true : false}
 
                                 />
                                 {risck.name}
