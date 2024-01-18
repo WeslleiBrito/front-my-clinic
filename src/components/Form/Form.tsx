@@ -47,7 +47,7 @@ export const Form: React.FC = () => {
         if(idForm){
 
             const formExist = forms.find((form) => {return form.id === idForm})
-            
+            console.log(formExist)
             if(formExist){
                 const occupationaisRisck: { id: string }[] = formExist.OccupationalHazards.map((risck) => {return {id: risck.id}}) 
                 setOccupationaisRisckForm(occupationaisRisck)
@@ -65,7 +65,8 @@ export const Form: React.FC = () => {
             }
         }
     }, [forms, idForm, navigate])
-  
+    
+
     const [form, onChange] = useForm(
         {
             functionPatient: ""

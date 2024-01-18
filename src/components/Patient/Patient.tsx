@@ -23,7 +23,7 @@ interface InputPatient {
 export const Patient = (input: InputPatient): JSX.Element | null => {
     const context = useContext(DataContext)
     const {id} = input
-    const { loading, patients, handleFormPatient, formPatient, fillFormPatient, forms } = context
+    const { loading, patients, handleFormPatient, formPatient, fillFormPatient, forms, setIdPatient } = context
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [search, setSearch] = useState("")
     const [listOpionsPatients, setListOptionsPatients] = useState<PatientType[]>([])
@@ -65,6 +65,7 @@ export const Patient = (input: InputPatient): JSX.Element | null => {
                 }
 
                 handleFormPatient(dataPatient)
+                setIdPatient(patientExist.idPatient)
             }
         }
     }, [forms, id])

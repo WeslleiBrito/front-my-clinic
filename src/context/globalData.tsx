@@ -235,7 +235,9 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         formCompany,
         handleFormCompany,
         fillFormCompany,
-        idCompany
+        idCompany,
+        setIdPatient,
+        setIdCompany
     }
 
     return <DataContext.Provider value={context}>{props.children}</DataContext.Provider>

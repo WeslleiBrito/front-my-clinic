@@ -12,7 +12,7 @@ interface InputCompany {
 export const Company = (input: InputCompany): JSX.Element | null => {
 
     const context = useContext(DataContext)
-    const { loading, formCompany, handleFormCompany, companies, fillFormCompany, forms} = context
+    const { loading, formCompany, handleFormCompany, companies, fillFormCompany, forms, setIdCompany} = context
     const [search, setSearch] = useState("")
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [listOpionsCompany, setListOptionsCompany] = useState<CompanyType[]>([])
@@ -51,6 +51,7 @@ export const Company = (input: InputCompany): JSX.Element | null => {
                 }
                 
                 handleFormCompany(dataCompany)
+                setIdCompany(companyExist.idCompany)
             }
 
 

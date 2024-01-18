@@ -107,7 +107,9 @@ export interface ContextInterface {
     fillFormPatient: (id: string) => void,
     formCompany: FormCompany,
     handleFormCompany: (event: ChangeEvent<HTMLInputElement> | FormCompany) => void,
-    fillFormCompany: (id: string) => void
+    fillFormCompany: (id: string) => void,
+    setIdPatient: (id: string) => void,
+    setIdCompany: (id: string) => void
 }
 
 export interface TypeExamAso {

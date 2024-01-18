@@ -37,7 +37,9 @@ const defaultContextValue: ContextInterface = {
     },
     handleFormCompany: (event: ChangeEvent<HTMLInputElement> | FormCompany) => {},
     fillFormCompany: (id: string) => {},
-    idCompany: ""
+    idCompany: "",
+    setIdCompany: () => {},
+    setIdPatient: () => {}
   };
 
 
