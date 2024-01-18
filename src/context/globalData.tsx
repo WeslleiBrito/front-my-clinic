@@ -1,7 +1,7 @@
 import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react'
 import { DataContext } from './dataContext'
 import { useFachtData } from '../hooks/useFechtDataHook'
-import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputCreateForm, Patient, ResponseErrorAxios, FormCompany } from '../types/types'
+import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputForm, Patient, ResponseErrorAxios, FormCompany } from '../types/types'
 import axios, { AxiosError }  from 'axios';
 import { BASE_URL } from '../../src/constants/BASE_URL'
 
@@ -9,6 +9,9 @@ import { BASE_URL } from '../../src/constants/BASE_URL'
 interface DataContextProps {
     children: ReactNode
 }
+const isChangeEvent = (event: ChangeEvent<HTMLInputElement> | FormPatient): event is ChangeEvent<HTMLInputElement> => {
+    return (event as ChangeEvent<HTMLInputElement>).target !== undefined;
+};
 
 export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
 
@@ -20,7 +23,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const [formCompany, setFormCompany] = useState<FormCompany>({nameCompany: "", cnpj: ""})
     const [idPatient, setIdPatient] = useState<string>("")
     const [idCompany, setIdCompany] = useState<string>("")
-    const [dataForm, setDataForm] = useState<InputCreateForm>(
+    const [dataForm, setDataForm] = useState<InputForm>(
         {
             functionPatient: "",
             idCompany: "",
@@ -68,10 +71,15 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         setDataForm({...dataForm, status: newStatus})
     }
 
-    const handleFormPatient = (event: ChangeEvent<HTMLInputElement>): void => {
-        const {name, value} = event.target
-        setFormPatient((prevForm) => ({ ...prevForm, [name]: value }))
-        handleIdPatient("")
+    const handleFormPatient = (event: ChangeEvent<HTMLInputElement> | FormPatient): void => {
+        
+        if(isChangeEvent(event)){
+            const {name, value} = event.target
+            setFormPatient((prevForm) => ({ ...prevForm, [name]: value }))
+            handleIdPatient("")
+        }else{
+            setFormPatient(event)
+        }
     }
 
     const handleFormCompany = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -162,7 +170,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
-    const createForm = async (input: InputCreateForm): Promise<boolean | undefined> => {
+    const createForm = async (input: InputForm): Promise<boolean | undefined> => {
         try {
             await axios.post(BASE_URL + '/form', input)
             const newForms: Form[] = await axios.get(BASE_URL + '/form')
@@ -184,6 +192,16 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
+    const editForm = async (input: InputForm): Promise<boolean | undefined> => {
+
+        try {
+            await axios.post(BASE_URL + '/form', input)
+        } catch (error) {
+            
+        }
+
+        return
+    }
     const context: ContextInterface = {
         companies,
         exams,

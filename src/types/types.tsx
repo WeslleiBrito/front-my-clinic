@@ -93,7 +93,7 @@ export interface ContextInterface {
     createPatient: (input: CreatePatientAPI) => Promise<void>,
     createCompany: (input: CreateCompanyAPI) => Promise<void>,
     setLoading: Function,
-    createForm: (input: InputCreateForm) => Promise<boolean | undefined>,
+    createForm: (input: InputForm) => Promise<boolean | undefined>,
     handleFunctionPatient: Function,
     handleIdCompany: Function,
     includeIdExam: Function,
@@ -117,7 +117,7 @@ export interface TypeExamAso {
     updatedAt: string
 }
 
-export interface InputCreateForm {
+export interface InputForm {
     idCompany: string,
     idPatient: string,
     idTypeExamAso: string,
@@ -129,6 +129,9 @@ export interface InputCreateForm {
     }[],
     idOccupationalHazards: {
         id: string
+    }[] | {
+        id: string,
+        acction: boolean
     }[],
     comments? : string 
 }

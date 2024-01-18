@@ -13,14 +13,17 @@ import {
          SectionPatient 
 } from './stylePatient'
 import { CustomModal } from '../ModalSearch/ModalSearch'
-import { Patient as PatientType} from '../../types/types'
+import { FormPatient, Patient as PatientType} from '../../types/types'
 import {ButtonSearch, InputSearch} from '../Form/styleForm'
 
+interface InputPatient {
+    id?: string 
+}
 
-export const Patient = (): JSX.Element | null => {
+export const Patient = (input: InputPatient): JSX.Element | null => {
     const context = useContext(DataContext)
-
-    const { loading, patients, handleFormPatient, formPatient, fillFormPatient } = context
+    const {id} = input
+    const { loading, patients, handleFormPatient, formPatient, fillFormPatient, forms } = context
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [search, setSearch] = useState("")
     const [listOpionsPatients, setListOptionsPatients] = useState<PatientType[]>([])
@@ -48,6 +51,23 @@ export const Patient = (): JSX.Element | null => {
             return 0
         }))
     }, [patients])
+
+    useEffect(() => {
+
+        if(id){
+            const patientExist = forms.find((form) => form.id === id)
+
+            if(patientExist){
+                const dataPatient: FormPatient = {
+                    namePatient: patientExist.namePatient,
+                    rg: patientExist.rg,
+                    cpf: patientExist.cpf
+                }
+
+                handleFormPatient(dataPatient)
+            }
+        }
+    }, [forms, id])
 
     const openModal = (): void => {
         setModalIsOpen(true);

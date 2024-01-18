@@ -130,8 +130,7 @@ export const FormPage = () => {
                 return 0
             })
         }
-        
-        console.log(newOrder)
+    
         setListForm(newOrder)
         
     }

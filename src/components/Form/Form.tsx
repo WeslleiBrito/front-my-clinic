@@ -19,29 +19,34 @@ import { useForm } from "../../hooks/useForm";
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { CreateCompanyAPI, InputCreateForm} from "../../types/types";
+import { CreateCompanyAPI, Form as FormType, InputForm} from "../../types/types";
 import React from 'react'
 import { Patient } from '../Patient/Patient'
 import { Company } from "../Company/Company";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { goForms } from "../../Routes/coordinator";
+
 
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
     const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany, forms } = context
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
+    const [editOccupationalRisckForm, setEditOccupationaisRisckForm] = useState<{id: string, acction: boolean}[]>([])
+    const [editExams, setEditExams] = useState<{id: string, date: Date, acction: boolean}[]>([])
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
     const [comments, setComments] = useState('');
     const [selectedTypeExamAso, setSelectedTypeExamAso] = useState<string>("")
 
-    const { id } = useParams();
+    const { idForm } = useParams();
+    const navigate = useNavigate()
 
     useEffect(() => {
+        
+        if(idForm){
 
-        if(id){
-
-            const formExist = forms.find((form) => {return form.id === id})
+            const formExist = forms.find((form) => {return form.id === idForm})
             
             if(formExist){
                 const occupationaisRisck: { id: string }[] = formExist.OccupationalHazards.map((risck) => {return {id: risck.id}}) 
@@ -51,10 +56,15 @@ export const Form: React.FC = () => {
                 setStatusPatient(formExist.status)
                 setComments(formExist.comments)
                 setSelectedTypeExamAso(formExist.typeExamAso.id)
+
+            }else if(!formExist && forms.length > 0){
+            
+                alert("O id informado não existe.")
+                goForms(navigate)
             }
         }
-    }, [forms, id])
-    
+    }, [forms, idForm, navigate])
+  
     const [form, onChange] = useForm(
         {
             functionPatient: ""
@@ -72,6 +82,22 @@ export const Form: React.FC = () => {
             setOccupationaisRisckForm([...occupationaisRisckForm, { id }])
         }
 
+        if(idForm){
+            const formExist = forms.find((form) => {return form.id === idForm}) as FormType
+            const risckExist = formExist.OccupationalHazards.find((item) => item.id === id)
+
+            if(risckExist){
+               if(editOccupationalRisckForm.find((risck) => risck.id === risckExist.id)){
+                    const filter = editOccupationalRisckForm.filter((item) => {return  item.id !== id})
+                    setEditOccupationaisRisckForm(filter)
+               }else{
+                    setEditOccupationaisRisckForm([...editOccupationalRisckForm, {id: id, acction: false}])
+               }
+
+            }else{
+                setEditOccupationaisRisckForm([...editOccupationalRisckForm, {id: id, acction: true}])
+            }
+        }   
     }
 
     const handleCheckboxExam = (id: string) => {
@@ -87,6 +113,23 @@ export const Form: React.FC = () => {
         } else {
             // Exame não existe, adicione com a data selecionada
             setExamForm([...examsForm, { id, date: new Date() }]);
+        }
+
+        if(idForm){
+            const formExist = forms.find((form) => {return form.id === idForm}) as FormType
+            const exam = formExist.exams.find((exam) => exam.id === id)
+
+            if(exam){
+                if(editExams.find((exam) => exam.id === id)){
+                    const filter = [...editExams].filter((item) => {return item.id !== id})
+                    setEditExams(filter)
+                }else{
+                    setEditExams([...editExams, {id: id, acction: false, date: new Date(exam.date)}])
+                }
+            }else{
+               
+                setEditExams([...editExams, {id, acction: true, date: new Date()}])
+            }
         }
     };
 
@@ -158,7 +201,7 @@ export const Form: React.FC = () => {
             await createCompany(input)
         }
 
-        const dataForm: InputCreateForm = {
+        const dataForm: InputForm = {
             functionPatient: form.functionPatient,
             idCompany: idCompany,
             idExams: examsForm.map((exam) => {
@@ -214,7 +257,7 @@ export const Form: React.FC = () => {
                     }) : null
                 }
             </SectionTypeExamAso>
-            <Patient/>
+            <Patient id={idForm}/>
             <Company/>
             <SectionTypeExamAso>
                 {
