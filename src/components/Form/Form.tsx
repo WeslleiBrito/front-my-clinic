@@ -56,6 +56,7 @@ export const Form: React.FC = () => {
                 setStatusPatient(formExist.status)
                 setComments(formExist.comments)
                 setSelectedTypeExamAso(formExist.typeExamAso.id)
+                setComments(formExist.comments)
 
             }else if(!formExist && forms.length > 0){
             
@@ -258,7 +259,7 @@ export const Form: React.FC = () => {
                 }
             </SectionTypeExamAso>
             <Patient id={idForm}/>
-            <Company/>
+            <Company id={idForm}/>
             <SectionTypeExamAso>
                 {
                     !loading ? occupationalHazards.sort((a, b) => {

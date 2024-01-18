@@ -9,7 +9,7 @@ import { BASE_URL } from '../../src/constants/BASE_URL'
 interface DataContextProps {
     children: ReactNode
 }
-const isChangeEvent = (event: ChangeEvent<HTMLInputElement> | FormPatient): event is ChangeEvent<HTMLInputElement> => {
+const isChangeEvent = (event: ChangeEvent<HTMLInputElement> | FormPatient | FormCompany): event is ChangeEvent<HTMLInputElement> => {
     return (event as ChangeEvent<HTMLInputElement>).target !== undefined;
 };
 
@@ -82,10 +82,14 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
-    const handleFormCompany = (event: ChangeEvent<HTMLInputElement>): void => {
-        const {name, value} = event.target
-        setFormCompany((prevForm) => ({ ...prevForm, [name]: value }))
-        handleIdCompany("")
+    const handleFormCompany = (event: ChangeEvent<HTMLInputElement> | FormCompany): void => {
+        if(isChangeEvent(event)){
+            const {name, value} = event.target
+            setFormCompany((prevForm) => ({ ...prevForm, [name]: value }))
+            handleIdCompany("")
+        }else{
+            setFormCompany(event)
+        }
     }
 
     const fillFormPatient = (id: string): void => {

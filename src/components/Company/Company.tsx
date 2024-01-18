@@ -3,16 +3,20 @@ import { HeaderCNPJ, HeaderName, InputCNPJ, InputName, ItemCNPJ, ItemName, ItemS
 import { ButtonSearch, InputSearch } from "../Form/styleForm";
 import { CustomModal } from "../ModalSearch/ModalSearch";
 import { DataContext } from '../../context/dataContext'
-import { Company as CompanyType} from "../../types/types";
+import { Company as CompanyType, FormCompany} from "../../types/types";
 
-export const Company = (): JSX.Element | null => {
+interface InputCompany {
+    id?: string 
+}
+
+export const Company = (input: InputCompany): JSX.Element | null => {
 
     const context = useContext(DataContext)
-    const { loading, formCompany, handleFormCompany, companies, fillFormCompany} = context
+    const { loading, formCompany, handleFormCompany, companies, fillFormCompany, forms} = context
     const [search, setSearch] = useState("")
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [listOpionsCompany, setListOptionsCompany] = useState<CompanyType[]>([])
-
+    const { id } = input
     useEffect(() => {
         const list: CompanyType[] = companies.map((company) => {
             return {
@@ -36,6 +40,22 @@ export const Company = (): JSX.Element | null => {
         }))
     }, [companies])
 
+    useEffect(() => {
+        if(id){
+            const companyExist = forms.find((form) => form.id === id)
+
+            if(companyExist){
+                const dataCompany: FormCompany = {
+                    nameCompany: companyExist.nameCompany,
+                    cnpj: companyExist.cnpj
+                }
+                
+                handleFormCompany(dataCompany)
+            }
+
+
+        }
+    }, [forms, id])
     const openModal = (): void => {
         setModalIsOpen(true);
     }

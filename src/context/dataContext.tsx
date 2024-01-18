@@ -1,5 +1,5 @@
 import {ChangeEvent, createContext} from "react";
-import { ContextInterface } from "../types/types";
+import { ContextInterface, FormCompany } from "../types/types";
 
 const defaultContextValue: ContextInterface = {
     companies: [],
@@ -35,7 +35,7 @@ const defaultContextValue: ContextInterface = {
       nameCompany: "",
       cnpj: ""
     },
-    handleFormCompany: (event: ChangeEvent<HTMLInputElement>) => {},
+    handleFormCompany: (event: ChangeEvent<HTMLInputElement> | FormCompany) => {},
     fillFormCompany: (id: string) => {},
     idCompany: ""
   };

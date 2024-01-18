@@ -106,7 +106,7 @@ export interface ContextInterface {
     handleFormPatient: Function,
     fillFormPatient: (id: string) => void,
     formCompany: FormCompany,
-    handleFormCompany: (event: ChangeEvent<HTMLInputElement>) => void,
+    handleFormCompany: (event: ChangeEvent<HTMLInputElement> | FormCompany) => void,
     fillFormCompany: (id: string) => void
 }
 
