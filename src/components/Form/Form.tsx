@@ -15,7 +15,6 @@ import {
     InputComments,
     ButtonSubmit
 } from './styleForm';
-import { useForm } from "../../hooks/useForm";
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -38,6 +37,7 @@ export const Form: React.FC = () => {
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
     const [comments, setComments] = useState('');
     const [selectedTypeExamAso, setSelectedTypeExamAso] = useState<string>("")
+    const [functionPatient, setFunctionPatient] = useState<string>("")
 
     const { idForm } = useParams();
     const navigate = useNavigate()
@@ -47,7 +47,6 @@ export const Form: React.FC = () => {
         if(idForm){
 
             const formExist = forms.find((form) => {return form.id === idForm})
-            console.log(formExist)
             if(formExist){
                 const occupationaisRisck: { id: string }[] = formExist.OccupationalHazards.map((risck) => {return {id: risck.id}}) 
                 setOccupationaisRisckForm(occupationaisRisck)
@@ -57,7 +56,7 @@ export const Form: React.FC = () => {
                 setComments(formExist.comments)
                 setSelectedTypeExamAso(formExist.typeExamAso.id)
                 setComments(formExist.comments)
-
+                setFunctionPatient(formExist.functionPatient)
             }else if(!formExist && forms.length > 0){
             
                 alert("O id informado não existe.")
@@ -66,12 +65,6 @@ export const Form: React.FC = () => {
         }
     }, [forms, idForm, navigate])
     
-
-    const [form, onChange] = useForm(
-        {
-            functionPatient: ""
-        }
-    )
   
     const handleCheckboxRisck = (id: string) => {
 
@@ -171,13 +164,13 @@ export const Form: React.FC = () => {
             return
         }
 
-        if (!form.functionPatient) {
+        if (!functionPatient) {
             alert("Não foi informado o cargo do paciente.")
             return
         }
 
         if (statusPatient === null) {
-            alert(`É preciso informar se o paciente está apto ou inapto para exercer a função de: ${form.functionPatient}.`)
+            alert(`É preciso informar se o paciente está apto ou inapto para exercer a função de: ${functionPatient}.`)
             return
         }
 
@@ -204,7 +197,7 @@ export const Form: React.FC = () => {
         }
 
         const dataForm: InputForm = {
-            functionPatient: form.functionPatient,
+            functionPatient: functionPatient,
             idCompany: idCompany,
             idExams: examsForm.map((exam) => {
                 const dateFormarted = format(exam.date ? exam.date : new Date(), "yyyy-MM-dd")
@@ -219,6 +212,8 @@ export const Form: React.FC = () => {
             status: statusPatient,
             comments
         }
+        
+        console.log(dataForm);
         
         const result = await createForm(dataForm)
 
@@ -325,8 +320,8 @@ export const Form: React.FC = () => {
                 <InputFunctionPatient
                     id="functionPatient"
                     name="functionPatient"
-                    value={form.functionPatient}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { onChange(event) }}
+                    value={functionPatient}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { setFunctionPatient(event.target.value) }}
                     required
                     autoComplete="off"
                 />

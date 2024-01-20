@@ -9,7 +9,7 @@ import { BASE_URL } from '../../src/constants/BASE_URL'
 interface DataContextProps {
     children: ReactNode
 }
-const isChangeEvent = (event: ChangeEvent<HTMLInputElement> | FormPatient | FormCompany): event is ChangeEvent<HTMLInputElement> => {
+export const isChangeEvent = (event: ChangeEvent<HTMLInputElement> | FormPatient | FormCompany): event is ChangeEvent<HTMLInputElement> => {
     return (event as ChangeEvent<HTMLInputElement>).target !== undefined;
 };
 
