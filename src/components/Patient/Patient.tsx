@@ -54,7 +54,7 @@ export const Patient = (input: InputPatient): JSX.Element | null => {
 
     useEffect(() => {
 
-        if(id){
+        if(id && forms){
             const patientExist = forms.find((form) => form.id === id)
 
             if(patientExist){

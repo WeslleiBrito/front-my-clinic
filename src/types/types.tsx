@@ -6,6 +6,11 @@ export enum USER_ROLES {
     NORMAL = "NORMAL"
 }
 
+export enum ACCTIONS_EDIT_EXAM {
+    ADD = "ADD",
+    REMOVE = "REMOVE",
+    EDIT = "EDIT"
+}
 
 export interface Company {
     id: string
@@ -94,6 +99,7 @@ export interface ContextInterface {
     createCompany: (input: CreateCompanyAPI) => Promise<void>,
     setLoading: Function,
     createForm: (input: InputForm) => Promise<boolean | undefined>,
+    editForm: (input: InputForm, id: string) => Promise<boolean | undefined>
     handleFunctionPatient: Function,
     handleIdCompany: Function,
     includeIdExam: Function,
@@ -128,6 +134,10 @@ export interface InputForm {
     idExams: {
         id: string,
         date: string
+    }[] | {
+        id: string,
+        date: string,
+        acction: ACCTIONS_EDIT_EXAM
     }[],
     idOccupationalHazards: {
         id: string

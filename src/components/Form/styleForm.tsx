@@ -41,3 +41,5 @@ export const ButtonSave = styled.button`
 export const ButtonSearch = styled.input.attrs({type: "button"})``
 
 export const InputSearch = styled.input.attrs({type: "text"})``
+
+export const ConjunctItemExam = styled.article``

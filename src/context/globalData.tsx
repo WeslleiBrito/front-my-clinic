@@ -196,15 +196,26 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         }
     }
 
-    const editForm = async (input: InputForm): Promise<boolean | undefined> => {
+    const editForm = async (input: InputForm, id: string): Promise<boolean | undefined> => {
 
         try {
-            await axios.post(BASE_URL + '/form', input)
+            await axios.put(BASE_URL + `/form/${id}`, input)
+            const newForms: Form[] = await axios.get(BASE_URL + '/form')
+            setForms(newForms)
+            return true
         } catch (error) {
-            
-        }
+            if(error instanceof AxiosError){
+                if(error.code === "ERR_NETWORK"){
+                    alert('Servidor fora do ar, entre em contato com o desenvolvedor do sistema.')
+                }else{
+                    console.log(error);
+                    
+                }
+                
+            }
 
-        return
+            return
+        }
     }
     const context: ContextInterface = {
         companies,
@@ -220,6 +231,7 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         createPatient,
         createCompany,
         createForm,
+        editForm,
         setLoading,
         handleFunctionPatient,
         handleIdCompany,

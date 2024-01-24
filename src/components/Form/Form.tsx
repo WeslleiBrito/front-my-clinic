@@ -13,12 +13,13 @@ import {
     StatusPatientFit,
     StatusPatientUnfit,
     InputComments,
-    ButtonSubmit
+    ButtonSubmit,
+    ConjunctItemExam
 } from './styleForm';
 import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { CreateCompanyAPI, Form as FormType, InputForm} from "../../types/types";
+import { ACCTIONS_EDIT_EXAM, CreateCompanyAPI, Form as FormType, InputForm } from "../../types/types";
 import React from 'react'
 import { Patient } from '../Patient/Patient'
 import { Company } from "../Company/Company";
@@ -29,10 +30,10 @@ import { goForms } from "../../Routes/coordinator";
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany, forms } = context
+    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany, forms, editForm } = context
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
-    const [editOccupationalRisckForm, setEditOccupationaisRisckForm] = useState<{id: string, acction: boolean}[]>([])
-    const [editExams, setEditExams] = useState<{id: string, date: Date, acction: boolean}[]>([])
+    const [editOccupationalRisckForm, setEditOccupationaisRisckForm] = useState<{ id: string, acction: boolean }[]>([])
+    const [editExams, setEditExams] = useState<{ id: string, date: Date, acction: ACCTIONS_EDIT_EXAM }[]>([])
     const [examsForm, setExamForm] = useState<{ id: string, date: Date | null }[]>([])
     const [statusPatient, setStatusPatient] = useState<boolean | null>(null)
     const [comments, setComments] = useState('');
@@ -43,29 +44,29 @@ export const Form: React.FC = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        
-        if(idForm){
 
-            const formExist = forms.find((form) => {return form.id === idForm})
-            if(formExist){
-                const occupationaisRisck: { id: string }[] = formExist.OccupationalHazards.map((risck) => {return {id: risck.id}}) 
+        if (idForm && forms) {
+
+            const formExist = forms.find((form) => { return form.id === idForm })
+            if (formExist) {
+                const occupationaisRisck: { id: string }[] = formExist.OccupationalHazards.map((risck) => { return { id: risck.id } })
                 setOccupationaisRisckForm(occupationaisRisck)
-                const exams: { id: string, date: Date | null }[] = formExist.exams.map((exam) => {return {id: exam.id, date: new Date(exam.date)}})
+                const exams: { id: string, date: Date | null }[] = formExist.exams.map((exam) => { return { id: exam.id, date: new Date(exam.date) } })
                 setExamForm(exams)
                 setStatusPatient(formExist.status)
                 setComments(formExist.comments)
                 setSelectedTypeExamAso(formExist.typeExamAso.id)
                 setComments(formExist.comments)
                 setFunctionPatient(formExist.functionPatient)
-            }else if(!formExist && forms.length > 0){
-            
+            } else if (!formExist && forms.length > 0) {
+
                 alert("O id informado não existe.")
                 goForms(navigate)
             }
         }
     }, [forms, idForm, navigate])
-    
-  
+
+
     const handleCheckboxRisck = (id: string) => {
 
         const elementExist = occupationaisRisckForm.find((risck) => risck.id === id)
@@ -77,69 +78,79 @@ export const Form: React.FC = () => {
             setOccupationaisRisckForm([...occupationaisRisckForm, { id }])
         }
 
-        if(idForm){
-            const formExist = forms.find((form) => {return form.id === idForm}) as FormType
+        if (idForm) {
+            const formExist = forms.find((form) => { return form.id === idForm }) as FormType
             const risckExist = formExist.OccupationalHazards.find((item) => item.id === id)
 
-            if(risckExist){
-               if(editOccupationalRisckForm.find((risck) => risck.id === risckExist.id)){
-                    const filter = editOccupationalRisckForm.filter((item) => {return  item.id !== id})
+            if (risckExist) {
+                if (editOccupationalRisckForm.find((risck) => risck.id === risckExist.id)) {
+                    const filter = editOccupationalRisckForm.filter((item) => { return item.id !== id })
                     setEditOccupationaisRisckForm(filter)
-               }else{
-                    setEditOccupationaisRisckForm([...editOccupationalRisckForm, {id: id, acction: false}])
-               }
+                } else {
+                    setEditOccupationaisRisckForm([...editOccupationalRisckForm, { id: id, acction: false }])
+                }
 
-            }else{
-                setEditOccupationaisRisckForm([...editOccupationalRisckForm, {id: id, acction: true}])
+            } else {
+                setEditOccupationaisRisckForm([...editOccupationalRisckForm, { id: id, acction: true }])
             }
-        }   
+        }
     }
 
     const handleCheckboxExam = (id: string) => {
-        const elementExist = examsForm.find((exam) => exam.id === id);
+        const elementExist: { id: string, date: Date | null } | undefined = examsForm.find((exam) => exam.id === id);
 
         if (elementExist) {
-            // Exame já existe, mantenha a seleção existente
-            setExamForm((prevExams) =>
-                prevExams.map((exam) =>
-                    exam.id === id ? { ...exam, date: exam.date || new Date() } : exam
-                )
-            );
+            const filter = examsForm.filter((item) => { return item.id !== id })
+            setExamForm(filter)
+
         } else {
-            // Exame não existe, adicione com a data selecionada
-            setExamForm([...examsForm, { id, date: new Date() }]);
+            const newList = [...examsForm, { id, date: new Date() }]
+            setExamForm(newList)
         }
 
-        if(idForm){
-            const formExist = forms.find((form) => {return form.id === idForm}) as FormType
+        if (idForm) {
+            const formExist = forms.find((form) => { return form.id === idForm }) as FormType
             const exam = formExist.exams.find((exam) => exam.id === id)
 
-            if(exam){
-                if(editExams.find((exam) => exam.id === id)){
-                    const filter = [...editExams].filter((item) => {return item.id !== id})
+            if (exam) {
+                if (editExams.find((exam) => exam.id === id)) {
+                    const filter = [...editExams].filter((item) => { return item.id !== id })
                     setEditExams(filter)
-                }else{
-                    setEditExams([...editExams, {id: id, acction: false, date: new Date(exam.date)}])
+                } else {
+                    setEditExams([...editExams, { id, acction: ACCTIONS_EDIT_EXAM.REMOVE, date: new Date(exam.date) }])
                 }
-            }else{
-               
-                setEditExams([...editExams, {id, acction: true, date: new Date()}])
+            } else {
+                setEditExams([...editExams, { id, acction: ACCTIONS_EDIT_EXAM.ADD, date: new Date() }])
             }
         }
     };
 
     const handleDateChange = (selectedDate: Date | null, examId: string) => {
         // Atualize o estado examsForm com a nova data e mantenha o status de seleção
-        setExamForm((prevExams) => {
-            const updatedExams = prevExams.map((exam) => {
-                if (exam.id === examId) {
-                    return { ...exam, date: selectedDate };
-                }
-                return exam;
-            });
 
-            return updatedExams;
-        });
+        const newDateItem = [...examsForm].map((exam) => {
+            if (examId === exam.id) {
+                return {
+                    id: exam.id,
+                    date: selectedDate
+                }
+            } else {
+                return exam
+            }
+        })
+
+        setExamForm(newDateItem)
+
+        if (idForm) {
+            const index = editExams.findIndex((exam) => exam.id === examId)
+
+            if (index > -1) {
+                const filter = [...editExams].splice(index, 1)
+                setEditExams([...filter, { id: examId, date: selectedDate || new Date(), acction: ACCTIONS_EDIT_EXAM.EDIT }])
+            } else {
+                setEditExams([...editExams, { id: examId, date: selectedDate || new Date(), acction: ACCTIONS_EDIT_EXAM.EDIT }])
+            }
+        }
     };
 
     const handleComments = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -182,8 +193,8 @@ export const Form: React.FC = () => {
                 cpf: formPatient.cpf
             }
 
-            await createPatient(input) 
-            
+            await createPatient(input)
+
         }
 
         if (companies.find((company) => company.cnpj === formCompany.cnpj && company.name.toLocaleLowerCase() === formCompany.nameCompany.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
@@ -192,37 +203,56 @@ export const Form: React.FC = () => {
                 name: formCompany.nameCompany,
                 cnpj: formCompany.cnpj
             }
-            
+
             await createCompany(input)
         }
 
         const dataForm: InputForm = {
             functionPatient: functionPatient,
             idCompany: idCompany,
-            idExams: examsForm.map((exam) => {
+            idExams: idForm ? editExams.map((exam) => {
                 const dateFormarted = format(exam.date ? exam.date : new Date(), "yyyy-MM-dd")
-                return{
+                return {
+                    id: exam.id,
+                    date: dateFormarted,
+                    acction: exam.acction
+                }
+            }) : examsForm.map((exam) => {
+                const dateFormarted = format(exam.date ? exam.date : new Date(), "yyyy-MM-dd")
+                return {
                     id: exam.id,
                     date: dateFormarted
                 }
             }),
-            idOccupationalHazards: occupationaisRisckForm,
+            idOccupationalHazards: idForm ? editOccupationalRisckForm : occupationaisRisckForm,
             idPatient: idPatient,
             idTypeExamAso: selectedTypeExamAso,
             status: statusPatient,
             comments
         }
-        
-        console.log(dataForm);
-        
-        const result = await createForm(dataForm)
 
-        if(result){
-            alert('Formuláro criado com sucesso!')
-        }else{
-            
-            return
+        console.log(dataForm);
+
+        if (idForm) {
+            const result = await editForm(dataForm, idForm)
+            if (result) {
+                alert('Formuláro editado com sucesso!')
+            } else {
+
+                return
+            }
+        } else {
+
+            const result = await createForm(dataForm)
+            if (result) {
+                alert('Formuláro criado com sucesso!')
+            } else {
+
+                return
+            }
         }
+
+
     }
 
     return (
@@ -246,7 +276,7 @@ export const Form: React.FC = () => {
                                     value={type.id}
                                     name='typeExamAso'
                                     checked={type.id === selectedTypeExamAso}
-                                    onChange={() => {handleTypeExamAso(type.id)}}
+                                    onChange={() => { handleTypeExamAso(type.id) }}
                                 />
                                 {type.name}
                             </LableItem>
@@ -254,8 +284,8 @@ export const Form: React.FC = () => {
                     }) : null
                 }
             </SectionTypeExamAso>
-            <Patient id={idForm}/>
-            <Company id={idForm}/>
+            <Patient id={idForm} />
+            <Company id={idForm} />
             <SectionTypeExamAso>
                 {
                     !loading ? occupationalHazards.sort((a, b) => {
@@ -274,7 +304,7 @@ export const Form: React.FC = () => {
                                     id={risck.id + risck.name}
                                     value={risck.id}
                                     onChange={() => handleCheckboxRisck(risck.id)}
-                                    checked={occupationaisRisckForm.find((risckItem) => {return risckItem.id === risck.id}) ? true : false}
+                                    checked={occupationaisRisckForm.find((risckItem) => { return risckItem.id === risck.id }) ? true : false}
 
                                 />
                                 {risck.name}
@@ -296,22 +326,28 @@ export const Form: React.FC = () => {
                         return 0
                     }).map((exam) => {
                         return (
-                            <LableItem key={exam.id}>
-                                <ItemExamCheckbox
-                                    id={exam.id}
-                                    value={exam.id}
-                                    checked={examsForm.find((item) => item.id === exam.id) ? true : false}
-                                    onChange={() => handleCheckboxExam(exam.id)}
-                                />
-                                {exam.name}
+                            <ConjunctItemExam>
+
+                                <LableItem key={exam.id}>
+                                    <ItemExamCheckbox
+                                        id={exam.id}
+                                        value={exam.id}
+                                        checked={examsForm.find((item) => item.id === exam.id) ? true : false}
+                                        onChange={() => handleCheckboxExam(exam.id)}
+                                    />
+                                    {exam.name}
+
+                                </LableItem>
                                 {
                                     examsForm.find((item) => item.id === exam.id) ? <DatePicker
                                         selected={(examsForm.find((item) => item.id === exam.id))?.date || new Date()}
-                                        onChange={(date: Date | null) => handleDateChange(date, exam.id)}
+                                        onChange={(date: Date | null) => { handleDateChange(date, exam.id) }}
                                         dateFormat="dd/MM/yyyy"
                                         maxDate={new Date()} /> : null
                                 }
-                            </LableItem>
+
+
+                            </ConjunctItemExam>
                         )
                     }) : null
                 }

@@ -41,7 +41,7 @@ export const Company = (input: InputCompany): JSX.Element | null => {
     }, [companies])
 
     useEffect(() => {
-        if(id){
+        if(id && forms){
             const companyExist = forms.find((form) => form.id === id)
 
             if(companyExist){
