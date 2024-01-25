@@ -45,7 +45,7 @@ export const Form: React.FC = () => {
 
     useEffect(() => {
 
-        if (idForm && forms) {
+        if (idForm) {
 
             const formExist = forms.find((form) => { return form.id === idForm })
             if (formExist) {
