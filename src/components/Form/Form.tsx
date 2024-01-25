@@ -211,17 +211,15 @@ export const Form: React.FC = () => {
             functionPatient: functionPatient,
             idCompany: idCompany,
             idExams: idForm ? editExams.map((exam) => {
-                const dateFormarted = format(exam.date ? exam.date : new Date(), "yyyy-MM-dd")
                 return {
                     id: exam.id,
-                    date: dateFormarted,
+                    date: exam.date ? String(exam.date) : new Date().toISOString(),
                     acction: exam.acction
                 }
             }) : examsForm.map((exam) => {
-                const dateFormarted = format(exam.date ? exam.date : new Date(), "yyyy-MM-dd")
                 return {
                     id: exam.id,
-                    date: dateFormarted
+                    date: exam.date ? String(exam.date) : new Date().toISOString()
                 }
             }),
             idOccupationalHazards: idForm ? editOccupationalRisckForm : occupationaisRisckForm,
@@ -299,9 +297,10 @@ export const Form: React.FC = () => {
                         return 0
                     }).map((risck) => {
                         return (
-                            <LableItem key={risck.id}>
+                            <LableItem>
                                 <ItemRisckOccupational
-                                    id={risck.id + risck.name}
+                                    key={risck.id}
+                                    id={risck.id}
                                     value={risck.id}
                                     onChange={() => handleCheckboxRisck(risck.id)}
                                     checked={occupationaisRisckForm.find((risckItem) => { return risckItem.id === risck.id }) ? true : false}
@@ -343,7 +342,8 @@ export const Form: React.FC = () => {
                                         selected={(examsForm.find((item) => item.id === exam.id))?.date || new Date()}
                                         onChange={(date: Date | null) => { handleDateChange(date, exam.id) }}
                                         dateFormat="dd/MM/yyyy"
-                                        maxDate={new Date()} /> : null
+                                        maxDate={new Date()} 
+                                        /> : null
                                 }
 
 
