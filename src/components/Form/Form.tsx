@@ -16,7 +16,6 @@ import {
     ButtonSubmit,
     ConjunctItemExam
 } from './styleForm';
-import { format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ACCTIONS_EDIT_EXAM, CreateCompanyAPI, Form as FormType, InputForm } from "../../types/types";
@@ -110,18 +109,21 @@ export const Form: React.FC = () => {
 
         if (idForm) {
             const formExist = forms.find((form) => { return form.id === idForm }) as FormType
-            const exam = formExist.exams.find((exam) => exam.id === id)
+            const examExist = editExams.find((exam) => exam.id === id)
 
-            if (exam) {
-                if (editExams.find((exam) => exam.id === id)) {
-                    const filter = [...editExams].filter((item) => { return item.id !== id })
-                    setEditExams(filter)
-                } else {
-                    setEditExams([...editExams, { id, acction: ACCTIONS_EDIT_EXAM.REMOVE, date: new Date(exam.date) }])
+            if(examExist){
+                const filter = editExams.filter((item) => {return item.id !== id})
+                setEditExams(filter)
+            }else{
+                const examInForm  = formExist.exams.find((item) => item.id === id)
+
+                if(examInForm){
+                    setEditExams([...editExams, {id, acction: ACCTIONS_EDIT_EXAM.REMOVE, date: new Date()}])
+                }else{
+                    setEditExams([...editExams, {id, acction: ACCTIONS_EDIT_EXAM.ADD, date: new Date()}])
                 }
-            } else {
-                setEditExams([...editExams, { id, acction: ACCTIONS_EDIT_EXAM.ADD, date: new Date() }])
             }
+         
         }
     };
 
@@ -142,16 +144,23 @@ export const Form: React.FC = () => {
         setExamForm(newDateItem)
 
         if (idForm) {
-            const index = editExams.findIndex((exam) => exam.id === examId)
+            const item = editExams.find((exam) => exam.id === examId)
 
-            if (index > -1) {
-                const filter = [...editExams].splice(index, 1)
-                setEditExams([...filter, { id: examId, date: selectedDate || new Date(), acction: ACCTIONS_EDIT_EXAM.EDIT }])
+            if (item) {
+                if(item.acction !== ACCTIONS_EDIT_EXAM.EDIT){ 
+                    const filter = [...editExams].filter((exam) => exam.id !== examId)
+                    setEditExams([...filter, { id: examId, date: selectedDate || new Date(), acction: item.acction }])
+                }else{
+                    const filter = [...editExams].filter((exam) => exam.id !== examId)
+                    setEditExams([...filter, { id: examId, date: selectedDate || new Date(), acction: ACCTIONS_EDIT_EXAM.EDIT }])
+                }
             } else {
                 setEditExams([...editExams, { id: examId, date: selectedDate || new Date(), acction: ACCTIONS_EDIT_EXAM.EDIT }])
             }
+
         }
     };
+
 
     const handleComments = (event: ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = event.target.value;
@@ -229,7 +238,6 @@ export const Form: React.FC = () => {
             comments
         }
 
-        console.log(dataForm);
 
         if (idForm) {
             const result = await editForm(dataForm, idForm)
@@ -342,8 +350,8 @@ export const Form: React.FC = () => {
                                         selected={(examsForm.find((item) => item.id === exam.id))?.date || new Date()}
                                         onChange={(date: Date | null) => { handleDateChange(date, exam.id) }}
                                         dateFormat="dd/MM/yyyy"
-                                        maxDate={new Date()} 
-                                        /> : null
+                                        maxDate={new Date()}
+                                    /> : null
                                 }
 
 
