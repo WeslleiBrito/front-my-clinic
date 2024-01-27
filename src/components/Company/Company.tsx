@@ -41,7 +41,7 @@ export const Company = (input: InputCompany): JSX.Element | null => {
     }, [companies])
 
     useEffect(() => {
-        if(id && forms){
+        if(id){
             const companyExist = forms.find((form) => form.id === id)
 
             if(companyExist){
@@ -54,6 +54,15 @@ export const Company = (input: InputCompany): JSX.Element | null => {
                 setIdCompany(companyExist.idCompany)
             }
 
+        }else{
+        
+            const dataCompany: FormCompany = {
+                nameCompany: "",
+                cnpj: ""
+            }
+            
+            handleFormCompany(dataCompany)
+            setIdCompany("")
 
         }
     }, [forms, id])
@@ -98,7 +107,7 @@ export const Company = (input: InputCompany): JSX.Element | null => {
                 <InputName placeholder="Empresa"
                     name="nameCompany"
                     value={formCompany.nameCompany}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormCompany(event) }}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormCompany(event); setIdCompany("") }}
                     required
                     autoComplete="off"
                 />
@@ -133,7 +142,7 @@ export const Company = (input: InputCompany): JSX.Element | null => {
                 <InputCNPJ placeholder="CNPJ"
                     name="cnpj"
                     value={formCompany.cnpj}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormCompany(event) }}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormCompany(event); setIdCompany("") }}
                     required
                     autoComplete="off"
                 />

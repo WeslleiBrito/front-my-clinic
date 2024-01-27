@@ -18,7 +18,7 @@ import {
 } from './styleForm';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { ACCTIONS_EDIT_EXAM, CreateCompanyAPI, Form as FormType, InputForm } from "../../types/types";
+import { ACCTIONS_EDIT_EXAM, Company as CompanyType, CreateCompanyAPI, FormCompany, FormPatient, Form as FormType, InputForm } from "../../types/types";
 import React from 'react'
 import { Patient } from '../Patient/Patient'
 import { Company } from "../Company/Company";
@@ -29,7 +29,27 @@ import { goForms } from "../../Routes/coordinator";
 export const Form: React.FC = () => {
     const context = useContext(DataContext);
 
-    const { loading, patients, companies, typeExamAso, occupationalHazards, exams, createPatient, createCompany, createForm, formCompany, formPatient, idPatient, idCompany, forms, editForm } = context
+    const { 
+        loading, 
+        patients, 
+        companies, 
+        typeExamAso, 
+        occupationalHazards, 
+        exams, 
+        createPatient, 
+        createCompany, 
+        createForm, 
+        formCompany, 
+        formPatient, 
+        idPatient, 
+        idCompany, 
+        forms, 
+        editForm,
+        handleFormPatient,
+        handleFormCompany,
+        setIdCompany,
+        setIdPatient
+     } = context
     const [occupationaisRisckForm, setOccupationaisRisckForm] = useState<{ id: string }[]>([])
     const [editOccupationalRisckForm, setEditOccupationaisRisckForm] = useState<{ id: string, acction: boolean }[]>([])
     const [editExams, setEditExams] = useState<{ id: string, date: Date, acction: ACCTIONS_EDIT_EXAM }[]>([])
@@ -64,7 +84,6 @@ export const Form: React.FC = () => {
             }
         }
     }, [forms, idForm, navigate])
-
 
     const handleCheckboxRisck = (id: string) => {
 
@@ -194,31 +213,41 @@ export const Form: React.FC = () => {
             return
         }
 
-        if (patients.find((patient) => patient.rg === formPatient.rg && patient.name.toLocaleLowerCase() === formPatient.namePatient.toLocaleLowerCase()) === undefined && idPatient.length === 0) {
+        if(idCompany.length === 0){
+            const companyExist = companies.find((company) => company.cnpj === formCompany.cnpj && company.name.toLocaleLowerCase() === formCompany.nameCompany.toLocaleLowerCase())
+            if(companyExist){
+                setIdCompany(companyExist.id)
+            }else{
 
-            const input: { name: string, rg: string, cpf?: string } = {
-                name: formPatient.namePatient,
-                rg: formPatient.rg,
-                cpf: formPatient.cpf
+                const input: CreateCompanyAPI = {
+                    name: formCompany.nameCompany,
+                    cnpj: formCompany.cnpj
+                }
+    
+                await createCompany(input)
             }
-
-            await createPatient(input)
-
         }
 
-        if (companies.find((company) => company.cnpj === formCompany.cnpj && company.name.toLocaleLowerCase() === formCompany.nameCompany.toLocaleLowerCase()) === undefined && idCompany.length === 0) {
+        if(idPatient.length === 0){
+            const patientExist = patients.find((patient) => patient.rg === formPatient.rg && patient.name.toLocaleLowerCase() === formPatient.namePatient.toLocaleLowerCase())
 
-            const input: CreateCompanyAPI = {
-                name: formCompany.nameCompany,
-                cnpj: formCompany.cnpj
+            if(patientExist){
+                setIdPatient(patientExist.id)
+            }else{
+                const input: { name: string, rg: string, cpf?: string } = {
+                    name: formPatient.namePatient,
+                    rg: formPatient.rg,
+                    cpf: formPatient.cpf
+                }
+    
+                await createPatient(input)
             }
-
-            await createCompany(input)
         }
+        
 
         const dataForm: InputForm = {
             functionPatient: functionPatient,
-            idCompany: idCompany,
+            idCompany: companies[companies.length - 1].id,
             idExams: idForm ? editExams.map((exam) => {
                 return {
                     id: exam.id,
@@ -252,6 +281,7 @@ export const Form: React.FC = () => {
             const result = await createForm(dataForm)
             if (result) {
                 alert('Formuláro criado com sucesso!')
+                clearForm()
             } else {
 
                 return
@@ -259,6 +289,28 @@ export const Form: React.FC = () => {
         }
 
 
+    }
+
+    const clearForm = (): void => {
+        const clearedPatient: FormPatient = {
+            namePatient: "",
+            rg: "",
+            cpf: ""
+        }
+
+        const clearedCompany: FormCompany = {
+            nameCompany: "",
+            cnpj: ""
+        }
+
+        handleFormPatient(clearedPatient)
+        handleFormCompany(clearedCompany)
+        setOccupationaisRisckForm([])
+        setExamForm([])
+        setStatusPatient(null)
+        setComments("")
+        setSelectedTypeExamAso("")
+        setFunctionPatient("")
     }
 
     return (

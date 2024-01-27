@@ -34,11 +34,19 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
             status: null
         }
     )
+    const [modifiedState, setModifiedState] = useState<boolean>(false)
 
     useEffect(() => setPatients([...patientsAPI]), [patientsAPI])
     useEffect(() => setCompany([...companiesAPI]), [companiesAPI])
     useEffect(() => setForms([...formsAPI]), [formsAPI])
-    
+    useEffect(() => {
+        const setForm = async () => {
+            const newForms: Form[] = (await axios.get(BASE_URL + '/form')).data
+            setForms(newForms.reverse())
+        }
+
+        setForm()
+    }, [modifiedState])
     const handleFunctionPatient = (newIdPatient: string): void => {
         setDataForm({...dataForm, functionPatient: newIdPatient})
     }
@@ -149,12 +157,14 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const createCompany = async (input: CreateCompanyAPI): Promise<void> => {
 
         try {
+
             await axios.post(BASE_URL + '/company',
                 input
             )
 
             const result: Company[] = (await axios.get(BASE_URL + '/company')).data
 
+            
             setCompany(result)
             setIdCompany(result[result.length - 1].id)
 
@@ -176,9 +186,20 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
 
     const createForm = async (input: InputForm): Promise<boolean | undefined> => {
         try {
+            
+            const newCompanyExist: Company[] = (await axios.get(BASE_URL + '/company')).data
+            const newPatientExist: Patient[] = (await axios.get(BASE_URL + '/patients')).data
+
+            if(newCompanyExist.length > companies.length){
+                input.idCompany = newCompanyExist[newCompanyExist.length - 1].id
+            }
+
+            if(newPatientExist.length > patients.length){
+                input.idPatient = newPatientExist[newPatientExist.length - 1].id
+            }
+
             await axios.post(BASE_URL + '/form', input)
-            const newForms: Form[] = (await axios.get(BASE_URL + '/form')).data
-            setForms(newForms)
+            setModifiedState(!modifiedState)
             return true
         } catch (error) {
         
@@ -199,9 +220,21 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
     const editForm = async (input: InputForm, id: string): Promise<boolean | undefined> => {
 
         try {
+
+            const newCompanyExist: Company[] = (await axios.get(BASE_URL + '/company')).data
+            const newPatientExist: Patient[] = (await axios.get(BASE_URL + '/patients')).data
+
+            if(newCompanyExist.length > companies.length){
+                input.idCompany = newCompanyExist[newCompanyExist.length - 1].id
+            }
+
+            if(newPatientExist.length > patients.length){
+                input.idPatient = newPatientExist[newPatientExist.length - 1].id
+            }
+
             await axios.put(BASE_URL + `/form/${id}`, input)
-            const newForms: Form[] = (await axios.get(BASE_URL + '/form')).data
-            setForms(newForms)
+            setModifiedState(!modifiedState)
+            
             return true
         } catch (error) {
             if(error instanceof AxiosError){

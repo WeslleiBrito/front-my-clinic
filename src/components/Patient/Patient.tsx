@@ -54,7 +54,7 @@ export const Patient = (input: InputPatient): JSX.Element | null => {
 
     useEffect(() => {
 
-        if(id && forms){
+        if(id){
             const patientExist = forms.find((form) => form.id === id)
 
             if(patientExist){
@@ -67,6 +67,17 @@ export const Patient = (input: InputPatient): JSX.Element | null => {
                 handleFormPatient(dataPatient)
                 setIdPatient(patientExist.idPatient)
             }
+            
+        }else{
+            const dataPatient: FormPatient = {
+                namePatient: "",
+                rg: "",
+                cpf: ""
+            }
+
+            handleFormPatient(dataPatient)
+            setIdPatient("")
+            
         }
     }, [forms, id])
 
@@ -114,7 +125,7 @@ export const Patient = (input: InputPatient): JSX.Element | null => {
                     value={formPatient.namePatient}
                     required
                     autoComplete="off"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event)}}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event); setIdPatient("")}}
                 />
                 <ButtonSearch value={"Buscar"} onClick={openModal} />
                 <CustomModal isOpen={modalIsOpen} onRequestClose={closeModal}>
@@ -145,14 +156,14 @@ export const Patient = (input: InputPatient): JSX.Element | null => {
                 <InputRG placeholder="RG"
                     name="rg"
                     value={formPatient.rg}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event)}}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event); setIdPatient("")}}
                     required
                     autoComplete="off"
                 />
                 <InputCPF placeholder="CPF"
                     name="cpf"
                     value={formPatient.cpf || ""}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event)}}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => { handleFormPatient(event); setIdPatient("")}}
                     autoComplete="off"
                 />
             </SectionPatient>
