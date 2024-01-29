@@ -99,7 +99,8 @@ export interface ContextInterface {
     createCompany: (input: CreateCompanyAPI) => Promise<void>,
     setLoading: Function,
     createForm: (input: InputForm) => Promise<boolean | undefined>,
-    editForm: (input: InputForm, id: string) => Promise<boolean | undefined>
+    editForm: (input: InputForm, id: string) => Promise<boolean | undefined>,
+    deleteForm: (input: DeleteForm) => Promise<boolean | undefined>,
     handleFunctionPatient: Function,
     handleIdCompany: Function,
     includeIdExam: Function,
@@ -175,4 +176,8 @@ export interface FormPatient {
 export interface FormCompany {
     nameCompany: string,
     cnpj?: string
+}
+
+export interface DeleteForm {
+    idForms: string[]
 }

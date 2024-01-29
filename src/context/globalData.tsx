@@ -1,7 +1,7 @@
 import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react'
 import { DataContext } from './dataContext'
 import { useFachtData } from '../hooks/useFechtDataHook'
-import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputForm, Patient, ResponseErrorAxios, FormCompany } from '../types/types'
+import { Company, ContextInterface, CreateCompanyAPI, CreatePatientAPI, Form, FormPatient, InputForm, Patient, ResponseErrorAxios, FormCompany, DeleteForm } from '../types/types'
 import axios, { AxiosError }  from 'axios';
 import { BASE_URL } from '../../src/constants/BASE_URL'
 
@@ -250,6 +250,19 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
             return
         }
     }
+
+    const deleteForm = async (input: DeleteForm): Promise<boolean | undefined> => {
+
+        try {
+            await axios.patch(BASE_URL + "/form", input)
+            setModifiedState(!modifiedState)
+            return true
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
     const context: ContextInterface = {
         companies,
         exams,
@@ -282,7 +295,8 @@ export const GlobalDataProvider: React.FC<DataContextProps> = (props) => {
         fillFormCompany,
         idCompany,
         setIdPatient,
-        setIdCompany
+        setIdCompany,
+        deleteForm
     }
 
     return <DataContext.Provider value={context}>{props.children}</DataContext.Provider>

@@ -24,7 +24,7 @@ import {
 
 } from "./styleFormPage"
 import { DataContext } from "../../../context/dataContext"
-import { Form } from "../../../types/types"
+import { DeleteForm, Form } from "../../../types/types"
 import { format } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useForm } from "../../../hooks/useForm";
@@ -36,7 +36,7 @@ export const FormPage = () => {
 
     const context = useContext(DataContext)
     type searchMethods  = "namePatient" | "nameCompany" | "cpf" | "cnpj" | "functionPatient" | "createdAt"
-    const {forms, loading} = context
+    const {forms, loading, deleteForm} = context
 
     const [listForm, setListForm] = useState<Form[]>([])
     const [typeSearchMethod, setTypeSearchMethod] = useState<searchMethods>("namePatient")
@@ -69,6 +69,23 @@ export const FormPage = () => {
         }
     }
 
+    const deleteSelectedForms = async () => {
+        if(checkedFormItens.length === 0){
+            alert("Selecione pelo menos um aso.")
+        }else{
+            const ids: DeleteForm = {
+                idForms: checkedFormItens
+            }
+
+            const result = await deleteForm(ids)
+
+            if(result){
+                alert(checkedFormItens.length > 1 ? "Asos deletados com sucesso!" : "Aso deletado com sucesso!")
+                setCheckedFormItens([])
+            }
+
+        }
+    }
     const filterListForm = (event: ChangeEvent<HTMLInputElement>) => {
         const valueSearch = event.target.value
 
@@ -157,6 +174,7 @@ export const FormPage = () => {
         setCheckedAllForms(!checkedAllForms)
     }
 
+    
     const component = (
         <Main>
             <SectionSearch>
@@ -194,7 +212,7 @@ export const FormPage = () => {
                 <DivButtons>
                     <NewButton value={"Novo"} onClick={() => {goForm(navigate)}}/>
                     <EditButton value={"Editar"} onClick={() => {goEdit()}}/>
-                    <DeleteButton value={"Excluir"}/>
+                    <DeleteButton value={"Excluir"} onClick={deleteSelectedForms}/>
                 </DivButtons>
             </SectionSearch>
             <ListForms>

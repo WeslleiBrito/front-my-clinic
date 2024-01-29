@@ -17,6 +17,7 @@ const defaultContextValue: ContextInterface = {
     setLoading: () => {},
     createForm: async (): Promise<boolean | undefined> => {return},
     editForm: async (): Promise<boolean | undefined> => {return},
+    deleteForm: async (): Promise<boolean | undefined> => {return},
     handleFunctionPatient: () => {},
     handleIdCompany: () => {},
     handleIdOccupationalHazards: () => {},
